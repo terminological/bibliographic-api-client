@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>com.github.terminological</groupId>
-	<version>0.01-SNAPSHOT</version>
+	<version>master-SNAPSHOT</version>
 	<artifactId>bibliographic-api-client</artifactId>
 	<packaging>jar</packaging>
 
@@ -19,10 +19,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
 			<artifactId>fluentxml</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>maven-plugin</type>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -31,9 +30,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
 			<artifactId>exotic-datatypes</artifactId>
-			<version>1.0.0</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -160,7 +159,7 @@
 						<maintainerFamilyName>Challen</maintainerFamilyName>
 						<maintainerEmail>rob@terminological.co.uk</maintainerEmail>
 					</packageData>
-					<outputDirectory>${project.build.directory}}/r-library</outputDirectory>
+					<outputDirectory>${project.build.directory}/r-library</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>
