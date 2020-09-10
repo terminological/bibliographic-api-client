@@ -55,6 +55,19 @@ public class BibliographicApis {
 
 	}
 	
+	public static BibliographicApis create(Path filePath, Path cacheDir) throws IOException {
+		Properties prop = System.getProperties();
+		prop.load(Files.newInputStream(filePath));
+		
+		String xrefToken = prop.getProperty("crossref-clickthroughtoken");
+		String developerEmail = prop.getProperty("developer-email");
+		String pubmedApiToken = prop.getProperty("pubmed-apikey");
+		String appId = prop.getProperty("app-id");
+		
+		return create(appId,developerEmail,xrefToken,pubmedApiToken,cacheDir);
+		
+	}
+	
 	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken) {
 		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, Optional.empty());
 	}
