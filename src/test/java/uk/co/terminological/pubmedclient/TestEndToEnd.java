@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.crossref.CrossRefClient;
@@ -29,6 +32,10 @@ public class TestEndToEnd {
 	public static void main(String[] args) throws IOException, BibliographicApiException, ParseException {
 		
 		BasicConfigurator.configure();
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.TRACE);
+		Logger log = LoggerFactory.getLogger(TestEndToEnd.class);
+		
+		log.debug("Debugging");
 		
 		Properties prop = System.getProperties();
 		prop.load(Files.newInputStream(Paths.get(prop.getProperty("user.home"),"Dropbox/secrets.prop")));
@@ -39,7 +46,7 @@ public class TestEndToEnd {
 		String appId = prop.getProperty("app-id");
 		
 		
-		Path ehcache = Paths.get("/tmp/ehcache/test123");
+		Path ehcache = Paths.get("/tmp/ehcache/test124");
 		Files.createDirectories(ehcache.getParent());
 		
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail,ehcache.resolve("pubmed"));

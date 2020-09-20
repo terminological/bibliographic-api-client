@@ -1,15 +1,26 @@
 package uk.co.terminological.bibliography.record;
 
+import java.io.Serializable;
 import java.util.Optional;
 
-public class RecordIdentifier implements RecordReference {
+public class ImmutableRecordReference implements RecordReference, Serializable {
 
 	IdType idType;
 	String id;
 	
+	public ImmutableRecordReference(RecordReference ref) {
+		idType = ref.getIdentifierType();
+		id = ref.getIdentifier().map(s -> s.replaceAll("^PMC", "")).orElse(null);
+	}
+	
+	public ImmutableRecordReference(IdType idType2, String id2) {
+		this.idType = idType2;
+		this.id = id2==null? null: id2.replaceAll("^PMC", "");
+	}
+
 	@Override
 	public Optional<String> getIdentifier() {
-		return Optional.of(id);
+		return Optional.ofNullable(id).map(s -> s.replaceAll("^PMC", ""));
 	}
 
 	@Override
@@ -36,7 +47,7 @@ public class RecordIdentifier implements RecordReference {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		RecordIdentifier other = (RecordIdentifier) obj;
+		ImmutableRecordReference other = (ImmutableRecordReference) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -47,4 +58,11 @@ public class RecordIdentifier implements RecordReference {
 		return true;
 	}
 
+	public String toString() {
+		return RecordReference.print(this);
+	}
+
+	public boolean isComplete() {
+		return id != null;
+	}
 }

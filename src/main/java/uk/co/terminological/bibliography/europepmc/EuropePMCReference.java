@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.europepmc.EuropePMCClient.DataSources;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.PrintReference;
 import uk.co.terminological.bibliography.record.RecordReference;
 
 /*
@@ -27,11 +27,11 @@ essn: "1095-9203",
 issn: "0036-8075"
  */
 
-public class EuropePMCReference extends ExtensibleJson implements Print, RecordReference {
+public class EuropePMCReference extends ExtensibleJson implements PrintReference, RecordReference {
 	
 	public EuropePMCReference(JsonNode node) { super(node); }
 	
-	public Optional<String> getIdentifier() {return this.asString("id");}
+	public Optional<String> getIdentifier() {return this.asString("id").map(s->s.replaceAll("^PMC", ""));}
 	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
 	public Optional<String> getTitle() {return this.asString("title");}
 	public Optional<String> getAuthorString() {return this.asString("authorString");}

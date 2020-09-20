@@ -22,6 +22,4 @@ public interface Searcher {
 		return search(search, Optional.of(from), Optional.of(to), Optional.empty());
 	};
 	
-	
-	
 }

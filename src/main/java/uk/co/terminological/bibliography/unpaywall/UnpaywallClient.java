@@ -22,14 +22,14 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.PdfFetcher;
-import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.RecordFetcher;
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
-import uk.co.terminological.bibliography.record.RecordIdentifier;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class UnpaywallClient extends CachingApiClient implements IdLocator {
+public class UnpaywallClient extends CachingApiClient implements RecordFetcher {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
 	//https://unpaywall.org/YOUR_DOI
@@ -111,10 +111,10 @@ public class UnpaywallClient extends CachingApiClient implements IdLocator {
 	}
 
 	@Override
-	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds) {
-		Map<RecordIdentifier, UnpaywallResult> out = new HashMap<>();
+	public Map<ImmutableRecordReference, ? extends Record> fetch(Collection<? extends RecordReference> equivalentIds) {
+		Map<ImmutableRecordReference, UnpaywallResult> out = new HashMap<>();
 		Collection<String> dois = equivalentIds.stream().filter(i -> i.getIdentifierType().equals(IdType.DOI)).flatMap(i -> i.getIdentifier().stream()).collect(Collectors.toList());
-		getUnpaywallByDois(dois).forEach(upw -> out.put(Builder.recordReference(upw), upw));
+		getUnpaywallByDois(dois).forEach(upw -> Builder.recordReference(upw).ifComplete(k -> out.put(k, upw)));
 		return out;
 	}
 	

@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -33,9 +33,11 @@ import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.client.IdMapper;
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.RecordIdentifier;
-import uk.co.terminological.bibliography.record.RecordIdentifierMapping;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
+import uk.co.terminological.bibliography.record.ImmutableRecordReferenceMapping;
 import uk.co.terminological.bibliography.record.RecordReference;
+import uk.co.terminological.bibliography.record.RecordReferenceMapping;
+import uk.co.terminological.datatypes.FluentSet;
 
 public class PMCIDClient extends CachingApiClient implements IdMapper {
 
@@ -58,7 +60,7 @@ public class PMCIDClient extends CachingApiClient implements IdMapper {
 		return instances.get(developerEmail);	
 	}
 	
-	private PMCIDClient(String developerEmail, String toolName, Optional<Path> cacheDir) {
+	public PMCIDClient(String developerEmail, String toolName, Optional<Path> cacheDir) {
 		super ( cacheDir, TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build());
 		this.developerEmail = developerEmail;
 		this.toolName = toolName;
@@ -132,7 +134,8 @@ public class PMCIDClient extends CachingApiClient implements IdMapper {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		params.add("idtype", idType.name().toLowerCase());
-		logger.debug("calling id converter with params: "+params);
+		logger.debug("Id mapper looking up: {} ids of type {} ", id.size(), idType);
+		logger.trace("calling id converter with params: "+params);
 		return this.buildCall(URL, PMCIDResult.class)
 			.cacheForever()
 			.withParams(params)
@@ -167,39 +170,31 @@ public class PMCIDClient extends CachingApiClient implements IdMapper {
 		return out;
 	}
 	
-	public static class MergeableList<X> extends ArrayList<X> {
-		public static <Y> MergeableList<Y> of(Y item) {
-			MergeableList<Y> out = new MergeableList<>();
-			out.add(item);
-			return out;
-		}
-		public MergeableList<X> merge(MergeableList<X> input) {
-			this.addAll(input);
-			return this;
-		}
-	}
+	
 	
 	@Override
-	public Set<RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
-		Set<RecordIdentifierMapping> out = new HashSet<>();
-		Map<IdType,MergeableList<String>> idsByType = new HashMap<>();
+	public Set<RecordReferenceMapping> mappings(Collection<? extends RecordReference> source) {
+		Set<RecordReferenceMapping> out = new HashSet<>();
+		Map<IdType,FluentSet<String>> idsByType = new HashMap<>();
+		
 		source.stream()
 			.filter(rr -> rr.getIdentifier().isPresent())
 			.forEach(rr -> idsByType.merge(
 					rr.getIdentifierType(), 
-					MergeableList.of(rr.getIdentifier().get()), 
-					(l1,l2) -> l1.merge(l2)));
-		for (Entry<IdType,MergeableList<String>> entry: idsByType.entrySet()) {
+					FluentSet.create(rr.getIdentifier().get()), 
+					(l1,l2) -> l1.append(l2)));
+		
+		for (Entry<IdType,FluentSet<String>> entry: idsByType.entrySet()) {
 			doCall(entry.getValue(),entry.getKey()).stream().flatMap(r -> r.records.stream()).forEach(
 				pmcr -> {
-					Set<RecordIdentifier> allIds = new HashSet<>();
+					Set<ImmutableRecordReference> allIds = new HashSet<>();
 					pmcr.doi.ifPresent(d -> allIds.add(Builder.recordReference(IdType.DOI, d)));
 					pmcr.pmcid.ifPresent(d -> allIds.add(Builder.recordReference(IdType.PMCID, d)));
 					pmcr.pmid.ifPresent(d -> allIds.add(Builder.recordReference(IdType.PMID, d)));
-					for (RecordIdentifier src: allIds) {
-						for (RecordIdentifier targ: allIds) {
+					for (ImmutableRecordReference src: allIds) {
+						for (ImmutableRecordReference targ: allIds) {
 							//if (!src.equals(targ)) {
-								out.add(Builder.recordIdMapping(src,targ));
+							out.add(new ImmutableRecordReferenceMapping(src,targ));
 							//}
 						}
 					}

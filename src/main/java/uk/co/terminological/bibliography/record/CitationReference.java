@@ -6,12 +6,16 @@ public interface CitationReference {
 
 	Optional<RecordReference> getIdentifier();
 	Optional<String> getTitle();
-	Optional<Print> getBibliographicId();
+	Optional<PrintReference> getBibliographicId();
+	
+	public default boolean isComplete() {
+		return getIdentifier().isPresent() && getIdentifier().get().isComplete();
+	}
 	
 	public static CitationReference create(
 			final RecordReference identifier,
 			final String title,
-			final Print bibliographicInfo) {
+			final PrintReference bibliographicInfo) {
 		return new CitationReference() {
 
 			@Override
@@ -25,11 +29,18 @@ public interface CitationReference {
 			}
 
 			@Override
-			public Optional<Print> getBibliographicId() {
+			public Optional<PrintReference> getBibliographicId() {
 				return Optional.ofNullable(bibliographicInfo);
 			}
 			
 		};
+	}
+	
+	public static String print(CitationReference cr) {
+		return
+			cr.getTitle().orElse("No title")+" "+
+			cr.getIdentifier().map(RecordReference::print).orElse("No identifier");
+		
 	}
 	
 }

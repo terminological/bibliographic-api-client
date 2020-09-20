@@ -1,48 +1,70 @@
 package uk.co.terminological.bibliography.record;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class MergedRecord implements Record {
+public class MergedRecord implements RecordWithCitations, Serializable {
 
-	List<Record> records = new ArrayList<>();
+	List<ImmutableRecord> records = new ArrayList<>();
 	
 	public static MergedRecord from(Record r) {
+		if (r instanceof MergedRecord) return (MergedRecord) r;
 		MergedRecord out = new MergedRecord();
-		return out.merge(r);
+		return out.merge(Builder.record(r));
 	}
 	
 	public MergedRecord merge(Record r) {
 		//TODO: Check for duplicates before merge
-		records.add(r);
+		records.add(Builder.record(r));
 		return this;
+	}
+	
+	public Set<ImmutableRecordReference> getIdentifiers() {
+		return records.stream().flatMap(r -> r.getIdentifiers().stream()).collect(Collectors.toSet());
+	}
+	
+	@Override
+	public Optional<String> getIdentifier(IdType type) {
+		return getIdentifiers().stream().filter(i -> i.getIdentifierType().equals(type)).flatMap(i -> i.getIdentifier().stream()).findFirst();
 	}
 	
 	@Override
 	public Optional<String> getIdentifier() {
-		return records.stream().flatMap(r -> r.getIdentifier().stream()).findAny();
+		return getIdentifier(IdType.DOI)
+				.or(() -> getIdentifier(IdType.PMID))
+				.or(() -> getIdentifier(IdType.PMCID).map(s -> s.replaceAll("^PMC", "")))
+				.or(() -> getIdentifiers().stream().flatMap(i -> i.getIdentifier().stream()).findFirst());
 	}
 
 	@Override
 	public IdType getIdentifierType() {
-		return records.stream().map(r -> r.getIdentifierType()).findAny().get();
+		if(getIdentifier(IdType.DOI).isPresent()) return IdType.DOI;
+		if(getIdentifier(IdType.PMID).isPresent()) return IdType.PMID;
+		if(getIdentifier(IdType.PMCID).isPresent()) return IdType.PMCID;
+		return IdType.UNK;
 	}
 
 	@Override
 	public List<RecordReference> getOtherIdentifiers() {
-		//TODO: resolve duplicates
 		return records.stream().flatMap(r -> r.getOtherIdentifiers().stream()).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<? extends Author> getAuthors() {
 		//TODO: resolve duplicates
-		return records.stream().flatMap(r -> r.getAuthors().stream()).collect(Collectors.toList());
+		return records.stream().flatMap(r -> r.getAuthors().stream()).filter(s -> s != null).collect(Collectors.toList());
 	}
 
 	@Override
@@ -52,27 +74,72 @@ public class MergedRecord implements Record {
 
 	@Override
 	public Optional<String> getAbstract() {
-		return records.stream().flatMap(r -> r.getAbstract().stream()).findAny();
+		return records.stream().flatMap(r -> r.getAbstract().stream()).filter(s -> s != null).findAny();
 	}
 
 	@Override
 	public Optional<String> getTitle() {
-		return records.stream().flatMap(r -> r.getTitle().stream()).findAny();
+		return records.stream().flatMap(r -> r.getTitle().stream()).filter(s -> s != null).findAny();
 	}
 
 	@Override
 	public Optional<String> getJournal() {
-		return records.stream().flatMap(r -> r.getJournal().stream()).findAny();
+		return records.stream().flatMap(r -> r.getJournal().stream()).filter(s -> s != null).findAny();
 	}
 
 	@Override
 	public Optional<LocalDate> getDate() {
-		return records.stream().flatMap(r -> r.getDate().stream()).findAny();
+		return records.stream().flatMap(r -> r.getDate().stream()).filter(s -> s != null).findAny();
 	}
 
 	@Override
 	public Optional<URI> getPdfUri() {
-		return records.stream().flatMap(r -> r.getPdfUri().stream()).findAny();
+		return records.stream().flatMap(r -> r.getPdfUri().stream()).filter(s -> s != null).findAny();
+	}
+
+	public static Collector<Record,List<Record>,Optional<MergedRecord>> collector() {
+		return new Collector<Record,List<Record>, Optional<MergedRecord>>() {
+			@Override
+			public Set<Characteristics> characteristics() {
+				return Set.of(Characteristics.UNORDERED,Characteristics.CONCURRENT);
+			}
+			@Override
+			public Supplier<List<Record>> supplier() {
+				return () -> new ArrayList<Record>();
+			}
+			@Override
+			public BiConsumer<List<Record>, Record> accumulator() {
+				return (l,r) -> l.add(r);
+			}
+			@Override
+			public BinaryOperator<List<Record>> combiner() {
+				return (l1,l2) -> {l1.addAll(l2); return l1;};
+			}
+			@Override
+			public Function<List<Record>, Optional<MergedRecord>> finisher() {
+				return l -> {
+					if (l.isEmpty()) return Optional.empty();
+					MergedRecord out = new MergedRecord();
+					l.forEach(out::merge);
+					return Optional.of(out);
+				};
+			}
+		};
+	}
+
+	@Override
+	public Stream<? extends CitationLink> getCitations() {
+		return this.records.stream().flatMap(r -> r.getCitations());
+	}
+
+	@Override
+	public Optional<Long> getCitedByCount() {
+		return this.records.stream().flatMap(r -> r.getCitedByCount().stream()).max(Long::compare);
+	}
+
+	@Override
+	public Optional<Long> getReferencesCount() {
+		return this.records.stream().flatMap(r -> r.getReferencesCount().stream()).max(Long::compare);
 	}
 
 	

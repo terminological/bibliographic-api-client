@@ -30,6 +30,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
@@ -40,9 +41,12 @@ public abstract class CachingApiClient {
 
 	protected CacheManager cacheManager;
 	protected boolean debug = false;
+	protected boolean noCache = false;
 
 	protected CachingApiClient(Optional<Path> optional, TokenBucket ratelimiter) {
 		this.client = Client.create();
+		client.setConnectTimeout(1000);
+		client.setReadTimeout(1000);
 		if (optional.isPresent()) {
 			StreamExceptions.tryRethrow(t -> Files.createDirectories(optional.get()));
 			this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
@@ -51,8 +55,8 @@ public abstract class CachingApiClient {
 							"forever",
 							CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
 									ResourcePoolsBuilder
-									.heap(1000)
-									.disk(40, MemoryUnit.MB, true))
+									.heap(10000)
+									.disk(400, MemoryUnit.MB, true))
 							.withExpiry(ExpiryPolicyBuilder.noExpiration()))
 					.withCache(
 							"week",
@@ -84,7 +88,8 @@ public abstract class CachingApiClient {
 		Runtime.getRuntime().addShutdownHook( new Thread() {
 			@Override
 			public void run() {
-				cacheManager.close();
+				logger.info("Closing cache: "+optional.map(p -> p.toString()).orElse("memory"));
+				if(cacheManager.getStatus().equals(org.ehcache.Status.AVAILABLE)) cacheManager.close();
 			}
 		});
 		this.rateLimiter = ratelimiter;
@@ -97,7 +102,19 @@ public abstract class CachingApiClient {
 	protected Cache<String,BinaryData> tempCache() {
 		return cacheManager.getCache("week", String.class, BinaryData.class);
 	}
+	
+	public void shutdown() {
+		if(cacheManager.getStatus().equals(org.ehcache.Status.AVAILABLE)) cacheManager.close();
+	}
 
+	public void disableCache() {
+		this.noCache = true;
+	}
+	
+	public void enableCache() {
+		this.noCache = false;
+	}
+	
 	public void debugMode() {
 		this.debug = true;
 		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
@@ -179,6 +196,12 @@ public abstract class CachingApiClient {
 		public Optional<X> post() {
 			return client.call(url,params,temporary,"POST",operation);
 		}
+		public CallBuilder<X,E> collapseLists(String string) {
+			MultivaluedMap<String,String> tmp = new MultivaluedMapImpl();
+			params.forEach((k,v) -> tmp.putSingle(k, v.stream().collect(Collectors.joining(string))));
+			params = tmp;
+			return this;
+		}
 	}
 
 	private <X,E extends Exception> Optional<X> call(String url, MultivaluedMap<String,String> params, boolean temporary, String method, FunctionWithException<InputStream,X,E> operation) {
@@ -186,25 +209,32 @@ public abstract class CachingApiClient {
 		Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
 		String key = keyFromApiQuery(url,params);
 		if (cache.containsKey(key)) {
-			logger.debug("Cache hit:" + key);
-			try {
-				X out = operation.apply(cache.get(key).inputStream());
-				return Optional.of(out);
-			} catch (Exception e) {
-				if (debug) e.printStackTrace();
-				logger.debug("Could not parse cached result:" + key);
+			if (!noCache) {
+				logger.debug("Cache hit:" + key);
+				try {
+					X out = operation.apply(cache.get(key).inputStream());
+					return Optional.of(out);
+				} catch (Exception e) {
+					if (debug) e.printStackTrace();
+					logger.debug("Could not parse cached result:" + key);
+					cache.remove(key);
+				}
+			} else {
+				logger.debug("Removing disabled cache item:" + key);
 				cache.remove(key);
 			}
 		}
 		// Not cached or operation did not succeed
 		rateLimit();
-		logger.debug("Retrieving from API: "+key);
+		logger.trace("Retrieving from API: "+key);
+		WebResource wr = client.resource(url).queryParams(params);
 		try {
-			WebResource wr = client.resource(url).queryParams(params);
+			
+			logger.debug("Calling url: {}",wr.toString());
 			ClientResponse r = wr.method(method,ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			if (!r.getClientResponseStatus().getFamily().equals(Status.Family.SUCCESSFUL)) {
-				logger.debug("API call failed with status {} : {}", r.getClientResponseStatus(), key);
+				logger.debug("API call failed with status {} : {}", r.getClientResponseStatus(), wr.toString());
 				return Optional.empty();
 			}
 			BinaryData data = BinaryData.from(r.getEntityInputStream());
@@ -213,7 +243,7 @@ public abstract class CachingApiClient {
 			return Optional.of(out);
 		} catch (Exception e) {
 			if (debug) e.printStackTrace();
-			logger.debug("Could not parse API result: "+key);
+			logger.warn("Could not parse API result {} because of {}",wr.toString(),e.getMessage());
 			return Optional.empty();
 		}
 	}

@@ -5,10 +5,11 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
-import static uk.co.terminological.bibliography.record.Builder.*;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.CitationReference;
 import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.ImmutableCitationReference;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
 
 public class OpenCitationsCitation extends ExtensibleJson implements CitationLink {
 	
@@ -36,14 +37,14 @@ public class OpenCitationsCitation extends ExtensibleJson implements CitationLin
 
 	@Override
 	public CitationReference getSource() {
-		return citationReference(
-				recordReference(IdType.DOI, getCitingDoi().get()), null, null);
+		return new ImmutableCitationReference(
+				new ImmutableRecordReference(IdType.DOI, getCitingDoi().get()), null, null);
 	}
 
 	@Override
 	public CitationReference getTarget() {
-		return citationReference(
-				recordReference(IdType.DOI, getCitedDoi().get()), null, null);
+		return new ImmutableCitationReference(
+				new ImmutableRecordReference(IdType.DOI, getCitedDoi().get()), null, null);
 	}
 
 	@Override

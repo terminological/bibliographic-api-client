@@ -3,14 +3,11 @@ package uk.co.terminological.bibliography.crossref;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,16 +29,16 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.client.CitesMapper;
-import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.RecordFetcher;
 import uk.co.terminological.bibliography.client.Searcher;
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
-import uk.co.terminological.bibliography.record.RecordIdentifier;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class CrossRefClient extends CachingApiClient implements IdLocator,Searcher,CitesMapper {
+public class CrossRefClient extends CachingApiClient implements RecordFetcher,Searcher,CitesMapper {
 	// https://www.crossref.org/schemas/
 	// https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
 	// https://github.com/CrossRef/rest-api-doc
@@ -196,7 +193,8 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 		protected String url;
 
 		MultivaluedMap<String, String> params;
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		//SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		CrossRefClient client;
 
 		/*ivate WebResource get(Client client) {
@@ -240,12 +238,12 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 		}
 
 		public QueryBuilder since(LocalDate date) {
-			params.add("filter","from-index-date:"+format.format(date));
+			params.add("filter","from-created-date:"+date.format(formatter));//date.format(format);//format.format(date));
 			return this;
 		}
 		
 		public QueryBuilder until(LocalDate date) {
-			params.add("filter","until-index-date:"+format.format(date));
+			params.add("filter","until-created-date:"+date.format(formatter));
 			return this;
 		}
 
@@ -281,14 +279,15 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 			return this;
 		}
 
-		public QueryBuilder filteredBy(DateFilter filter, Date value) {
-			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+format.format(value));
+		public QueryBuilder filteredBy(DateFilter filter, LocalDate value) {
+			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+value.format(formatter));
 			return this;
 		}
 
 		public Optional<CrossRefListResult> execute() {
 			return client.buildCall(url, CrossRefListResult.class)
 					.withParams(params)
+					.collapseLists(",")
 					.withOperation(is -> new CrossRefListResult(client.objectMapper.readTree(is)))
 					.get();
 		}
@@ -431,13 +430,12 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Map<RecordIdentifier,? extends Record> getById(Collection<RecordReference> equivalentIds) {
-		Map<RecordIdentifier,CrossRefWork> out = new HashMap<>(); 
+	public Map<ImmutableRecordReference,? extends Record> fetch(Collection<? extends RecordReference> equivalentIds) {
+		Map<ImmutableRecordReference,CrossRefWork> out = new HashMap<>(); 
 		for (RecordReference id: equivalentIds) {
 			if (id instanceof CrossRefWork) {
 				out.put(Builder.recordReference(id),(CrossRefWork) id);
-			};
-			if (id.getIdentifierType().equals(IdType.DOI)) {
+			} else if (id.getIdentifierType().equals(IdType.DOI)) {
 				if (id.getIdentifier().isPresent()) {
 					Optional<CrossRefWork> tmp = this.getByDoi(id.getIdentifier().get()).map(r -> r.getWork());
 					tmp.ifPresent(t -> out.put(Builder.recordReference(id), t));
@@ -448,18 +446,23 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> refs) {
+	public Set<? extends CitationLink> citesReferences(Collection<? extends RecordReference> refs) {
 		
 		Set<CitationLink> out = new HashSet<>();
-		for (RecordReference ref: refs) {
-			Optional<CrossRefWork> tmp;
+		refs.stream().filter(r -> r.getIdentifierType().equals(IdType.DOI)).forEach(ref -> {
+		
+			Optional<CrossRefWork> tmp = Optional.empty();
 			if (ref instanceof CrossRefWork) {
 				tmp = Optional.of((CrossRefWork) ref); 
 			} else {
-				tmp = getById(ref.getIdentifierType(), ref.getIdentifier().get()).map(w -> (CrossRefWork) w);
+				if (ref.getIdentifier().isPresent()) {
+					tmp = getByDoi(ref.getIdentifier().get())
+							.map(crsr -> crsr.getWork());
+				}
 			}
 			out.addAll(tmp.stream().flatMap(t -> t.getCitations()).collect(Collectors.toList()));
-		}
+		
+		});
 		return out;
 	}
 

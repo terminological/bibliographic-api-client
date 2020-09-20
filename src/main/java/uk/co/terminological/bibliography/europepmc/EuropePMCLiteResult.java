@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.europepmc.EuropePMCClient.DataSources;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.PrintReference;
 import uk.co.terminological.bibliography.record.RecordReference;
-
+import static uk.co.terminological.datatypes.StreamExceptions.*;
 
 /*
 
@@ -48,18 +48,18 @@ firstIndexDate: "2010-12-03",
 firstPublicationDate: "2010-10-01"
  */
 
-public class EuropePMCLiteResult extends ExtensibleJson implements RecordReference, Print {
+public class EuropePMCLiteResult extends ExtensibleJson implements RecordReference, PrintReference {
 
 	public EuropePMCLiteResult(JsonNode node) { super(node); }
 	
-	public Optional<String> getIdentifier() {return this.asString("id");}
+	public Optional<String> getIdentifier() {return this.asString("id").map(s->s.replaceAll("^PMC", ""));}
 	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
 	public Optional<String> getTitle() {return this.asString("title");}
 	public Optional<String> getAuthorString() {return this.asString("authorString");}
 	public Optional<String> getJournal() {return this.asString("journalTitle");}
 	public Optional<String> getIssue() {return this.asString("issue");}
 	public Optional<String> getVolume() {return this.asString("journalVolume");}
-	public Optional<Long> getYear() {return this.asString("pubYear").map(Long::parseLong);}
+	public Optional<Long> getYear() {return this.asString("pubYear").flatMap(ignoreRuntime(Long::parseLong));}
 	public Optional<String> getPage() {return this.asString("pageInfo");}
 	// public Optional<String> getEssn() {return this.asString("essn");}
 	public Optional<String> getIssn() {return this.asString("journalIssn");}

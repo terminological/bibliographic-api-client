@@ -31,7 +31,8 @@ public class EntrezEntry implements PrintRecord, Raw<XmlElement> {
 		try {
 			return raw.doXpath(".//ArticleTitle").getOne(XmlElement.class).getTextContent();
 		} catch (XmlException e) {
-			throw new RuntimeException(e);
+			// log.debug("could not find title in entrez record");
+			return Optional.empty();
 		}
 	}
 
@@ -134,7 +135,7 @@ public class EntrezEntry implements PrintRecord, Raw<XmlElement> {
 
 	@Override
 	public Optional<String> getIdentifier() {
-		return getPMID();
+		return getPMID().map(s->s.replaceAll("^PMC", ""));
 	}
 
 	@Override

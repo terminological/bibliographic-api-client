@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,21 +13,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.PrintReference;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
+import uk.co.terminological.datatypes.StreamExceptions;
+import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
 
-public class CrossRefReference extends ExtensibleJson implements RecordReference, Print, Record {
+public class CrossRefReference extends ExtensibleJson implements RecordReference, PrintReference, Record {
 	
 	public CrossRefReference(JsonNode node) { super(node); }
 	
-	public Optional<String> getIdentifier() {return this.asString("DOI");}
+	public Optional<String> getIdentifier() {return this.asString("DOI").map(s->s.replaceAll("^PMC", ""));}
 	public Optional<String> getTitle() {return this.asString("article-title");}
 	public Optional<String> getFirstAuthorName() {return this.asString("author");}
 	public Optional<String> getJournal() {return this.asString("journal-title");}
 	public Optional<String> getVolume() {return this.asString("volume");}
 	public Optional<String> getIssue() {return this.asString("issue");}
-	public Optional<Long> getYear() {return this.asString("year").map(Long::parseLong);}
+	public Optional<Long> getYear() {return this.asString("year").flatMap(StreamExceptions.ignoreRuntime(Long::parseLong));}
 	public Optional<String> getPage() {return this.asString("first-page");}
 
 	@Override

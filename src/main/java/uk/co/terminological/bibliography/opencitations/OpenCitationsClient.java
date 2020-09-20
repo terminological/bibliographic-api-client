@@ -1,7 +1,7 @@
 package uk.co.terminological.bibliography.opencitations;
 
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,7 +87,8 @@ public class OpenCitationsClient extends CachingApiClient implements CitedByMapp
 		protected String url;
 
 		MultivaluedMap<String, String> params;
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		//SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		OpenCitationsClient client;
 
 		/*ivate WebResource get(Client client) {
@@ -141,11 +142,11 @@ public class OpenCitationsClient extends CachingApiClient implements CitedByMapp
 	}
 
 	@Override
-	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+	public Set<? extends CitationLink> citesReferences(Collection<? extends RecordReference> ref) {
 		Set<CitationLink> out = new HashSet<>();
 		List<String> dois = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.DOI)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		dois.stream().forEach(
-				doi -> this.buildQuery(Action.CITATIONS, doi).execute().stream().flatMap(lr -> lr.getCitations()).forEach(
+				doi -> this.buildQuery(Action.REFERENCES, doi).execute().stream().flatMap(lr -> lr.getCitations()).forEach(
 						e -> out.add(e)
 				)
 		);
@@ -153,11 +154,11 @@ public class OpenCitationsClient extends CachingApiClient implements CitedByMapp
 	}
 
 	@Override
-	public Collection<? extends CitationLink> referencesCiting(Collection<RecordReference> ref) {
+	public Collection<? extends CitationLink> referencesCiting(Collection<? extends RecordReference> ref) {
 		List<CitationLink> out = new ArrayList<>();
 		List<String> dois = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.DOI)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		dois.stream().forEach(
-				doi -> this.buildQuery(Action.REFERENCES, doi).execute().stream().flatMap(lr -> lr.getCitations()).forEach(
+				doi -> this.buildQuery(Action.CITATIONS, doi).execute().stream().flatMap(lr -> lr.getCitations()).forEach(
 						e -> out.add(e)
 				)
 		);

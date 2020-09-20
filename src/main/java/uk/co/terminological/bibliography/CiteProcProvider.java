@@ -22,7 +22,7 @@ import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.PrintReference;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.Tuple;
@@ -128,8 +128,8 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	         record.getAbstract().ifPresent(a -> builder.abstrct(a.replace('\n', ' ').trim()));
 	         record.getPdfUri().ifPresent(p -> builder.URL(p.toString()));
 	         
-	         if (record instanceof Print) {
-	        	 Print print = (Print) record;
+	         if (record instanceof PrintReference) {
+	        	 PrintReference print = (PrintReference) record;
 	        	 
 	        	 print.getIssue().ifPresent(i -> builder.issue(i));
 	        	 print.getPage().ifPresent(p -> builder.page(p));

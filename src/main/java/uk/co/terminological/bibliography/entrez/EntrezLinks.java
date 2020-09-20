@@ -11,6 +11,9 @@ import static uk.co.terminological.bibliography.record.Builder.*;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.ImmutableCitationLink;
+import uk.co.terminological.bibliography.record.ImmutableCitationReference;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
 import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.fluentxml.XmlElement;
@@ -82,20 +85,31 @@ public class EntrezLinks implements Raw<XmlElement> {
 		return links;
 	}
 	
-	public Stream<CitationLink> getCitations() {
+	public Stream<CitationLink> getCitations(boolean invert) {
 		return stream()
 				.filter(l -> l.toId.isPresent())
-				.map(l -> 
-			citationLink(
-					citationReference(
-							recordReference(lookup.get(l.fromDb),l.fromId),null,null
-							),
-					citationReference(
-							recordReference(lookup.get(l.toDbOrUrl),l.toId.get()),null,null
-							),
-					Optional.empty()
-				)
-		);
+				.map(l -> { 
+					if (invert) {
+						return new ImmutableCitationLink(
+								new ImmutableCitationReference(
+										new ImmutableRecordReference(lookup.get(l.toDbOrUrl),l.toId.get()),null,null),
+								new ImmutableCitationReference(
+										new ImmutableRecordReference(lookup.get(l.fromDb),l.fromId),null,null
+										),
+								Optional.empty()
+							);
+					} else {
+						return new ImmutableCitationLink(
+								new ImmutableCitationReference(
+										new ImmutableRecordReference(lookup.get(l.fromDb),l.fromId),null,null
+										),
+								new ImmutableCitationReference(
+										new ImmutableRecordReference(lookup.get(l.toDbOrUrl),l.toId.get()),null,null
+										),
+								Optional.empty()
+							);
+					}
+				});
 		
 	}
 

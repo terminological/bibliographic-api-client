@@ -16,6 +16,7 @@ import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.RecordReference;
+import static uk.co.terminological.datatypes.StreamExceptions.*;
 
 public class EuropePMCCoreResult extends EuropePMCLiteResult implements PrintRecord {
 
@@ -61,16 +62,18 @@ affiliationOrgId
 
 	@Override
 	public Optional<LocalDate> getDate() {
-		return this.asString("firstPublicationDate ").map(d -> LocalDate.parse(d));
+		return this.asString("firstPublicationDate").flatMap(ignoreFunction(d -> LocalDate.parse(d)));
 	}
 
 	@Override
 	public Optional<URI> getPdfUri() {
 		return this.streamPath("fullTextUrlList","fullTextUrl")
-			.filter(n -> n.asString("documentStyle").orElse("XXX").equals("PDF"))
+			.filter(n -> n.asString("documentStyle").orElse("XXX").equalsIgnoreCase("PDF"))
 			.flatMap(n -> n.asString("url").stream())
-			.map(n -> URI.create(n))
-			.findFirst();
+			.filter(n -> n!=null)
+			.findFirst()
+			.flatMap(ignoreRuntime(n -> URI.create(n)));
+			
 	}
 
 	

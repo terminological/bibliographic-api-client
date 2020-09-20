@@ -34,23 +34,25 @@ import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.PdfFetcher;
 import uk.co.terminological.bibliography.client.CitedByMapper;
 import uk.co.terminological.bibliography.client.CitesMapper;
-import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.RecordFetcher;
 import uk.co.terminological.bibliography.client.IdMapper;
 import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.pmcidconv.PMCIDClient;
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
-import uk.co.terminological.bibliography.record.RecordIdentifier;
-import uk.co.terminological.bibliography.record.RecordIdentifierMapping;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
+import uk.co.terminological.bibliography.record.ImmutableRecordReferenceMapping;
 import uk.co.terminological.bibliography.record.RecordReference;
+import uk.co.terminological.bibliography.record.RecordReferenceMapping;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
  */
-public class EntrezClient extends CachingApiClient implements Searcher, IdLocator, CitesMapper, CitedByMapper, IdMapper {
+public class EntrezClient extends CachingApiClient implements Searcher, RecordFetcher, CitesMapper, CitedByMapper, IdMapper {
 
 	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
 	// TODO: caching with https://hc.apache.org/httpcomponents-client-ga/tutorial/html/caching.html#storage and EHCache
@@ -66,6 +68,8 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	private static final String ESEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
 	private static final String EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi";
 	private static final String ELINK = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi";
+	
+	private PMCIDClient idLookup;
 	
 	private static Map<String, EntrezClient> singleton = new HashMap<>();
 
@@ -95,6 +99,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 		this.apiKey = apiKey;
 		this.appId = appId;
 		this.developerEmail = developerEmail;
+		this.idLookup = new PMCIDClient(developerEmail, appId, cache.map(c -> c.resolve("idlookup")));
 	}
 
 	protected MultivaluedMap<String, String> defaultApiParams() {
@@ -223,14 +228,16 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 		return this.buildSearchQuery(searchTerm).execute().get().getIds().collect(Collectors.toList());
 	}
 
+	@Deprecated
 	public List<String> findPMIdsByDoi(String doi) { // throws BibliographicApiException {
 		if (doi.isEmpty()) return Collections.emptyList();
 		return this.buildSearchQuery(doi).execute().get().getIds().collect(Collectors.toList());
 	}
 
+	@Deprecated
 	public List<String> findPMIdsByPubMedCentralIds(String pmcid) { //throws BibliographicApiException {
 		if (pmcid.isEmpty()) return Collections.emptyList();
-		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds().collect(Collectors.toList());
+		return this.buildSearchQuery(pmcid.replace("PMC", "")).execute().get().getIds().collect(Collectors.toList());
 	}
 	
 	private String keyFrom(String pmid) {
@@ -298,8 +305,8 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 		return out;
 	}
 	
-	public Optional<EntrezEntries> getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey) {
-		MultivaluedMap<String, String> fetchParams = defaultApiParams();
+	public Optional<EntrezEntries> getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey, MultivaluedMap<String, String> fetchParams) {
+		//MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("format", "xml");
 		fetchParams.add("query_key", queryKey);
@@ -535,6 +542,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	public List<String> getReferencingPubMedCentralIdsByPubMedCentralId(String pmcId) throws BibliographicApiException {
+		pmcId = pmcId.replaceFirst("PMC", "");
 		return this.buildLinksQueryForIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC)
 				.toDatabase(Database.PMC)
 				.command(Command.NEIGHBOR)
@@ -546,6 +554,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	public List<String> getReferencedPubMedCentralIdsByPubMedCentralId(String pmcId) throws BibliographicApiException {
+		pmcId = pmcId.replaceFirst("PMC", "");
 		return this.buildLinksQueryForIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC)
 				.toDatabase(Database.PMC)
 				.command(Command.NEIGHBOR)
@@ -563,7 +572,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 		from.ifPresent(s -> tmp.betweenDates(s, to.orElse(LocalDate.now())));
 		limit.ifPresent(l -> tmp.limit(1, l));
 		tmp.execute().ifPresent(s -> {
-			s.getStoredResult(this).ifPresent(e -> {
+			s.getStoredResult(this, tmp.searchParams).ifPresent(e -> {
 				out.addAll(e.stream().collect(Collectors.toList()));
 			});
 		});
@@ -571,57 +580,81 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	@Override
-	public Collection<? extends CitationLink> referencesCiting(Collection<RecordReference> ref) {
+	public Collection<? extends CitationLink> referencesCiting(Collection<? extends RecordReference> ref) {
 		List<CitationLink> out = new ArrayList<>();
-		List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		
+		Set<String> pmcids = idLookup.mappings(ref).stream()
+			.filter(rm -> rm.getTarget().getIdentifierType().equals(IdType.PMCID))
+			.flatMap(rm -> rm.getTarget().getIdentifier().stream())
+			.map(s -> s.replaceFirst("PMC", ""))
+			.collect(Collectors.toSet());
+		
 		this.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
 				.toDatabase(Database.PMC)
 				.command(Command.NEIGHBOR)
 				.withLinkname("pmc_pmc_citedby")
-				.execute().stream().flatMap(l -> l.getCitations()).forEach(c -> out.add(c));
+				.execute().stream().flatMap(l -> l.getCitations(true)).forEach(c -> out.add(c));
 		return out;
 	}
 
 	@Override
-	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+	public Set<? extends CitationLink> citesReferences(Collection<? extends RecordReference> ref) {
 		Set<CitationLink> out = new HashSet<>();
-		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
-		List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		
+		Set<RecordReferenceMapping> tmp = idLookup.mappings(ref);
+		Set<String> pmcids = tmp.stream()
+				.filter(rm -> rm.getTarget().getIdentifierType().equals(IdType.PMCID))
+				.flatMap(rm -> rm.getTarget().getIdentifier().stream())
+				.map(s -> s.replaceFirst("PMC", ""))
+				.collect(Collectors.toSet());
+		
+		Set<String> pmids = tmp.stream()
+				.filter(rm -> rm.getTarget().getIdentifierType().equals(IdType.PMID))
+				.flatMap(rm -> rm.getTarget().getIdentifier().stream())
+				.collect(Collectors.toSet());
+		
+		
 		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 				.toDatabase(Database.PUBMED)
 				.command(Command.NEIGHBOR)
 				.withLinkname("pubmed_pubmed_refs")
-				.execute().stream().flatMap(l -> l.getCitations()).forEach(c -> out.add(c));
+				.execute().stream().flatMap(l -> l.getCitations(false)).forEach(c -> out.add(c));
+		
 		this.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
 				.toDatabase(Database.PMC)
 				.command(Command.NEIGHBOR)
 				.withLinkname("pmc_pmc_cites")
-				.execute().stream().flatMap(l -> l.getCitations()).forEach(c -> out.add(c));
+				.execute().stream().flatMap(l -> l.getCitations(false)).forEach(c -> out.add(c));
 		return out;
 	}
 
 	@Override
-	public Map<RecordIdentifier, EntrezEntry> getById(Collection<RecordReference> ref) {
-		Map<RecordIdentifier, EntrezEntry> out = new HashMap<>();
-		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
-		// List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+	public Map<ImmutableRecordReference, EntrezEntry> fetch(Collection<? extends RecordReference> ref) {
+		Map<ImmutableRecordReference, EntrezEntry> out = new HashMap<>();
+		
+		Set<String> pmids = idLookup.mappings(ref).stream()
+				.filter(rm -> rm.getTarget().getIdentifierType().equals(IdType.PMID))
+				.flatMap(rm -> rm.getTarget().getIdentifier().stream())
+				.map(s -> s.replaceFirst("PMC", ""))
+				.collect(Collectors.toSet());
+		
 		getPMEntriesByPMIds(pmids).forEach(ee -> out.put(Builder.recordReference(ee), ee));
 		return out;
 	}
 
 	@Override
-	public Set<RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
-		Set<RecordIdentifierMapping> out = new HashSet<>();
-		Map<RecordIdentifier, EntrezEntry> tmp = getById(source);
-		for (Entry<RecordIdentifier, EntrezEntry> e: tmp.entrySet()) {
-			Set<RecordIdentifier> allIds = new HashSet<>();
+	public Set<? extends RecordReferenceMapping> mappings(Collection<? extends RecordReference> source) {
+		Set<RecordReferenceMapping> out = new HashSet<>();
+		Map<ImmutableRecordReference, EntrezEntry> tmp = fetch(source);
+		for (Entry<ImmutableRecordReference, EntrezEntry> e: tmp.entrySet()) {
+			Set<ImmutableRecordReference> allIds = new HashSet<>();
 			allIds.add(e.getKey());
 			allIds.add(Builder.recordReference(e.getValue()));
-			e.getValue().getOtherIdentifiers().stream().map(Builder::recordReference).forEach(allIds::add);
-			for (RecordIdentifier src: allIds) {
-				for (RecordIdentifier targ: allIds) {
+			e.getValue().getOtherIdentifiers().stream().map(m -> Builder.recordReference(m)).forEach(allIds::add);
+			for (ImmutableRecordReference src: allIds) {
+				for (ImmutableRecordReference targ: allIds) {
 					//if (!src.equals(targ)) {
-						out.add(Builder.recordIdMapping(src,targ));
+						out.add(new ImmutableRecordReferenceMapping(src,targ));
 					//}
 				}
 			}

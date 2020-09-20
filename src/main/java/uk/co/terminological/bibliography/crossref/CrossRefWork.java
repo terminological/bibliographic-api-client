@@ -1,9 +1,6 @@
 package uk.co.terminological.bibliography.crossref;
 
-import static uk.co.terminological.bibliography.record.Builder.*;
-
 import java.net.URI;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,14 +15,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.ImmutableCitationLink;
+import uk.co.terminological.bibliography.record.ImmutableCitationReference;
+import uk.co.terminological.bibliography.record.PrintReference;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.bibliography.record.RecordWithCitations;
+import uk.co.terminological.datatypes.StreamExceptions;
 
-public class CrossRefWork extends ExtensibleJson implements Print, RecordWithCitations {
+public class CrossRefWork extends ExtensibleJson implements PrintReference, RecordWithCitations {
 	public CrossRefWork(JsonNode node) {super(node);}
 	
-	public Optional<String> getIdentifier() {return this.asString("DOI");}
+	public Optional<String> getIdentifier() {return this.asString("DOI").map(s->s.replaceAll("^PMC", ""));}
 	public IdType getIdentifierType() {return IdType.DOI;}
 	public Optional<String> getTitle() {return this.streamPath("title").findFirst().map(n -> n.asString());}
 	public Optional<String> getFirstAuthorName() {
@@ -37,7 +37,7 @@ public class CrossRefWork extends ExtensibleJson implements Print, RecordWithCit
 	public Optional<Long> getYear() {
 		return this.streamPath("published-print","date-parts")
 				.findFirst().stream() // weird nested array
-				.findFirst().map(n -> n.asLong())
+				.findFirst().flatMap(StreamExceptions.ignoreFunction(n -> n.asLong()))
 				.or(() -> getDate().map(d -> (long) d.getYear()));
 		}
 	public Optional<String> getPage() {return this.asString("page");}
@@ -63,9 +63,9 @@ public class CrossRefWork extends ExtensibleJson implements Print, RecordWithCit
 		Integer i = 1;
 		for (CrossRefReference r: (Iterable<CrossRefReference>)this.getReferences()::iterator) {
 			tmp.add(
-				citationLink(
-						citationReference(this, this.getTitle().orElse(null), this),
-						citationReference(r, r.getTitle().orElse(null), r),
+				new ImmutableCitationLink(
+						new ImmutableCitationReference(this, this.getTitle().orElse(null), this),
+						new ImmutableCitationReference(r, r.getTitle().orElse(null), r),
 						Optional.of(i)
 					));
 			i += 1;

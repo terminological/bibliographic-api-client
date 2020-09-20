@@ -15,4 +15,8 @@ public interface Author {
 	public default String getLabel() {
 		return (getLastName()+", "+getInitials().orElse("Unknown").substring(0, 1)).toLowerCase();
 	}
+	
+	public static String print(Author a) {
+		return a.getLabel();
+	}
 }

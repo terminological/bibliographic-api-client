@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.RecordIdentifier;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
 
 public class PMCIDRecord {
 	@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
@@ -30,8 +30,8 @@ public class PMCIDRecord {
 		return Optional.empty();
 	}
 
-	public List<RecordIdentifier> getMapping() {
-		List<RecordIdentifier> out = new ArrayList<>();
+	public List<ImmutableRecordReference> getMapping() {
+		List<ImmutableRecordReference> out = new ArrayList<>();
 		idByType(IdType.DOI).ifPresent(s -> out.add(Builder.recordReference(IdType.DOI, s)));
 		idByType(IdType.PMCID).ifPresent(s -> out.add(Builder.recordReference(IdType.PMCID, s)));
 		idByType(IdType.PMID).ifPresent(s -> out.add(Builder.recordReference(IdType.PMID, s)));

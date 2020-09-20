@@ -3,6 +3,8 @@ package uk.co.terminological.bibliography.entrez;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
@@ -50,11 +52,11 @@ public class EntrezSearch implements Raw<XmlElement> {
 		}
 	}
 	
-	public Optional<EntrezEntries> getStoredResult(EntrezClient client) {
+	public Optional<EntrezEntries> getStoredResult(EntrezClient client, MultivaluedMap<String, String> searchParams) {
 		Optional<String> webEnv = getWebEnv(); 
 		Optional<String> queryKey = getQueryKey();
 		if (webEnv.isPresent() && queryKey.isPresent()) {
-			return client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get());
+			return client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get(), searchParams);
 		}
 		return Optional.empty();
 	}

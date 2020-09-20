@@ -1,0 +1,1 @@
+out.getTitles().forEach(System.out::println);

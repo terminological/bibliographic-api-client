@@ -2,11 +2,10 @@ package uk.co.terminological.bibliography.europepmc;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -23,16 +22,20 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.client.CitedByMapper;
 import uk.co.terminological.bibliography.client.CitesMapper;
-import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.RecordFetcher;
 import uk.co.terminological.bibliography.client.Searcher;
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.ImmutableCitationLink;
+import uk.co.terminological.bibliography.record.ImmutableCitationReference;
+import uk.co.terminological.bibliography.record.ImmutablePrintReference;
+import uk.co.terminological.bibliography.record.ImmutableRecordReference;
+import uk.co.terminological.bibliography.record.PrintReference;
 import uk.co.terminological.bibliography.record.Record;
-import uk.co.terminological.bibliography.record.RecordIdentifier;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class EuropePMCClient extends CachingApiClient implements Searcher,IdLocator,CitesMapper,CitedByMapper {
+public class EuropePMCClient extends CachingApiClient implements Searcher,RecordFetcher,CitesMapper,CitedByMapper {
 
 	// https://europepmc.org/RestfulWebService
 	
@@ -83,12 +86,12 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 		if( type.equals(IdType.DOI)) {
 			tmp = fullSearch("DOI:"+id);
 		} else if( type.equals(IdType.PMCID)) {
-			tmp = fullSearch("PMCID:"+id);
+			tmp = fullSearch("PMCID:PMC"+id);
 		} else if( type.equals(IdType.PMID)) {
 			//EXT_ID:16199517
-			tmp = fullSearch("EXT_ID:"+id);
+			tmp = fullSearch("EXT_ID:"+id+" AND SRC:MED");
 		} else {
-			tmp = fullSearch(id);
+			tmp = fullSearch("EXT_ID:"+id);
 		}
 		return tmp.getItems()
 				
@@ -102,6 +105,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	public static class QueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		EuropePMCClient client;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		
 		protected QueryBuilder(MultivaluedMap<String, String> searchParams,String searchTerm, EuropePMCClient client) {
 			this.searchParams = searchParams;
@@ -131,11 +135,26 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 		
 		public Optional<EuropePMCListResult.Core> executeFull() {
 			this.searchParams.add("resultType", "core");
-			return client.buildCall(baseUrl+"searchPost", EuropePMCListResult.Core.class)
+			return client.buildCall(baseUrl+"search", EuropePMCListResult.Core.class)
+			//return client.buildCall(baseUrl+"searchPOST", EuropePMCListResult.Core.class)
 					.withParams(searchParams)
 					.withOperation(is -> 
 						new EuropePMCListResult.Core(client.objectMapper.readTree(is))
-					).post();
+			//		).post();
+					).get();
+		}
+
+		public QueryBuilder between(Optional<LocalDate> from, Optional<LocalDate> to) {
+			String fromStr = from.map(d -> d.format(formatter)).orElse("1900-01-01");
+			String toStr = to.orElse(LocalDate.now()).format(formatter);
+			String search = this.searchParams.get("query").stream().collect(Collectors.joining(" "));
+			this.searchParams.putSingle("query", search+" AND (FIRST_PDATE:["+fromStr+" TO "+toStr+"])");
+			return this;
+		}
+		
+		public QueryBuilder limit(Optional<Integer> records) {
+			records.ifPresent(r -> this.searchParams.putSingle("pageSize", r.toString()));
+			return this;
 		}
 		
 	}
@@ -164,6 +183,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	
 	public EuropePMCListResult<EuropePMCCoreResult> fullSearch(String text) {
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
+		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=PMC:PMC6560460&sort=CITED%20desc&format=json
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
 		// query=malaria%20sort_cited:y
 		// format=json
@@ -177,6 +197,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	}
 	
 	public EuropePMCListResult<EuropePMCCitation> citations(DataSources source, String id) {
+		if (source.equals(DataSources.PMC)) id = "PMC"+id.replaceAll("^PMC", "");
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/citations?format=json
 		//id=23245604
 		//source=MED
@@ -191,6 +212,8 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	}
 	
 	public EuropePMCListResult<EuropePMCReference> references(DataSources source, String id) {
+		//https://www.ebi.ac.uk/europepmc/webservices/rest/PMC/PMC6560460/references?format=json
+		if (source.equals(DataSources.PMC)) id = "PMC"+id.replaceAll("^PMC", "");
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/references?format=json
 		//id=23245604
 		//source=MED
@@ -207,22 +230,27 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	
 	
 	public static enum DataSources {
-		AGR, CBA, CTX, ETH, HIR, MED, NBK, PAT, PMC
+		AGR, CBA, CTX, ETH, HIR, MED, NBK, PAT, PMC, PPR
 	}
 
 	@Override
-	public Collection<? extends CitationLink> referencesCiting(Collection<RecordReference> ref) {
+	public Collection<? extends CitationLink> citesReferences(Collection<? extends RecordReference> ref) {
 		
-		List<CitationLink> out = new ArrayList<>();
+		Set<CitationLink> out = new HashSet<>();
 		
 		for (RecordReference r: ref) {
+			
+			String title = null;
+			ImmutablePrintReference print = null;
+			if (r instanceof Record) title = ((Record) r).getTitle().orElse(null);
+			if (r instanceof PrintReference) print = Builder.printReference((PrintReference) r);
 			
 			if (r.getIdentifierType().equals(IdType.PMID)) {
 				int i = 0;
 				for (EuropePMCReference r2: references(DataSources.MED,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
-					out.add(Builder.citationLink(
-							Builder.citationReference(r, null, null), 
-							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+					out.add(new ImmutableCitationLink(
+							new ImmutableCitationReference(r, title, print), 
+							new ImmutableCitationReference(r2, r2.getTitle().orElse(null), null), 
 							Optional.of(i)));
 				}
 			}
@@ -230,9 +258,9 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 			if (r.getIdentifierType().equals(IdType.PMCID)) {
 				int i = 0;
 				for (EuropePMCReference r2: references(DataSources.PMC,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
-					out.add(Builder.citationLink(
-							Builder.citationReference(r, null, null), 
-							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+					out.add(new ImmutableCitationLink(
+							new ImmutableCitationReference(r, title, print), 
+							new ImmutableCitationReference(r2, r2.getTitle().orElse(null), null), 
 							Optional.of(i)));
 				}
 			}
@@ -243,18 +271,23 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	}
 
 	@Override
-	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+	public Collection<? extends CitationLink> referencesCiting(Collection<? extends RecordReference> ref) {
 		
 		Set<CitationLink> out = new HashSet<>();
 		
 		for (RecordReference r: ref) {
 			
+			String title = null;
+			ImmutablePrintReference print = null;
+			if (r instanceof Record) title = ((Record) r).getTitle().orElse(null);
+			if (r instanceof PrintReference) print = Builder.printReference((PrintReference) r);
+			
 			if (r.getIdentifierType().equals(IdType.PMID)) {
 				int i = 0;
 				for (EuropePMCCitation r2: citations(DataSources.MED,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
-					out.add(Builder.citationLink(
-							Builder.citationReference(r, null, null), 
-							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+					out.add(new ImmutableCitationLink(
+							new ImmutableCitationReference(r2, r2.getTitle().orElse(null), null),
+							new ImmutableCitationReference(r, title, print), 
 							Optional.of(i)));
 				}
 			}
@@ -262,9 +295,9 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 			if (r.getIdentifierType().equals(IdType.PMCID)) {
 				int i = 0;
 				for (EuropePMCCitation r2: citations(DataSources.PMC,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
-					out.add(Builder.citationLink(
-							Builder.citationReference(r, null, null), 
-							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+					out.add(new ImmutableCitationLink(
+							new ImmutableCitationReference(r2, r2.getTitle().orElse(null), null),
+							new ImmutableCitationReference(r, title, print), 
 							Optional.of(i)));
 				}
 			}
@@ -274,8 +307,8 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	}
 
 	@Override
-	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds) {
-		Map<RecordIdentifier, Record> out = new HashMap<>();
+	public Map<ImmutableRecordReference, ? extends Record> fetch(Collection<? extends RecordReference> equivalentIds) {
+		Map<ImmutableRecordReference, Record> out = new HashMap<>();
 		
 		for (RecordReference rr : equivalentIds) {
 			if (rr.getIdentifier().isPresent()) {
@@ -289,7 +322,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	@Override
 	public Collection<? extends Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to,
 			Optional<Integer> limit) {
-		return this.buildQuery(search).executeFull().stream().flatMap(c -> c.getItems()).collect(Collectors.toList());
+		return this.buildQuery(search).between(from,to).limit(limit).executeFull().stream().flatMap(c -> c.getItems()).collect(Collectors.toList());
 		
 	}
 	

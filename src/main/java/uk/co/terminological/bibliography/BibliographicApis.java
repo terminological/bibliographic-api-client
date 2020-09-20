@@ -7,13 +7,14 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
 
-import uk.co.terminological.bibliography.CiteProcProvider.Format;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.co.terminological.bibliography.crossref.CrossRefClient;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.europepmc.EuropePMCClient;
 import uk.co.terminological.bibliography.opencitations.OpenCitationsClient;
 import uk.co.terminological.bibliography.pmcidconv.PMCIDClient;
-import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
 
 public class BibliographicApis {
@@ -33,7 +34,7 @@ public class BibliographicApis {
 	
 	// TODO: https://github.com/ncbi/JATSPreviewStylesheets
 	// TODO: https://github.com/PeerJ/jats-conversion/blob/master/src/data/xsl/jats-to-html.xsl
-	
+	private static final Logger logger = LoggerFactory.getLogger(BibliographicApis.class);
 	
 	public static BibliographicApis create(Path filePath) throws IOException {
 
@@ -86,6 +87,7 @@ public class BibliographicApis {
 
 	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
 
+		logger.info("Setting up API client with cache: "+cacheDir.map(Path::toString).orElse("memory"));
 		entrez = EntrezClient.create(pubmedApiToken, appId, developerEmail,
 				cacheDir.map(o -> o.resolve("entrez")).orElse(null));
 		pmcIdConv = PMCIDClient.create(appId,developerEmail, 
@@ -110,6 +112,16 @@ public class BibliographicApis {
 		unpaywall.debugMode();
 		europepmc.debugMode();
 		opencitations.debugMode();
+		return this;
+	}
+	
+	public BibliographicApis shutdown() {
+		entrez.shutdown();
+		pmcIdConv.shutdown();
+		crossref.shutdown();
+		unpaywall.shutdown();
+		europepmc.shutdown();
+		opencitations.shutdown();
 		return this;
 	}
 	
@@ -139,6 +151,26 @@ public class BibliographicApis {
 	
 	public OpenCitationsClient getOpenCitationsClient() {
 		return opencitations;
+	}
+
+	public void disableCache() {
+		this.entrez.disableCache();
+		this.crossref.disableCache();
+		this.europepmc.disableCache();
+		this.opencitations.disableCache();
+		this.pdfFetcher.disableCache();
+		this.pmcIdConv.disableCache();
+		this.unpaywall.disableCache();	
+	}
+
+	public void enableCache() {
+		this.entrez.enableCache();
+		this.crossref.enableCache();
+		this.europepmc.enableCache();
+		this.opencitations.enableCache();
+		this.pdfFetcher.enableCache();
+		this.pmcIdConv.enableCache();
+		this.unpaywall.enableCache();
 	}
 	
 	

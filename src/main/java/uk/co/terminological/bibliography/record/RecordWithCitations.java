@@ -8,5 +8,7 @@ public interface RecordWithCitations extends Record {
 	public Stream<? extends CitationLink> getCitations();
 	public Optional<Long> getCitedByCount();
 	public Optional<Long> getReferencesCount();
-	 		
+	
+	
+	
 }
