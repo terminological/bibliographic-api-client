@@ -123,17 +123,17 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,Record
 			return this;
 		}
 		
-		public Optional<EuropePMCListResult.Lite> executeLite() {
+		public Optional<EuropePMCListResult<EuropePMCLiteResult>> executeLite() {
 			this.searchParams.add("resultType", "lite");
 			return client.buildCall(baseUrl+"searchPost", EuropePMCListResult.Lite.class)
 					.withParams(searchParams)
 					.withOperation(is -> 
 						new EuropePMCListResult.Lite(client.objectMapper.readTree(is))
-					).post();
+					).post().map(o -> (EuropePMCListResult<EuropePMCLiteResult>) o);
 					
 		}
 		
-		public Optional<EuropePMCListResult.Core> executeFull() {
+		public Optional<EuropePMCListResult<EuropePMCCoreResult>> executeFull() {
 			this.searchParams.add("resultType", "core");
 			return client.buildCall(baseUrl+"search", EuropePMCListResult.Core.class)
 			//return client.buildCall(baseUrl+"searchPOST", EuropePMCListResult.Core.class)
@@ -141,7 +141,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,Record
 					.withOperation(is -> 
 						new EuropePMCListResult.Core(client.objectMapper.readTree(is))
 			//		).post();
-					).get();
+					).get().map(o -> (EuropePMCListResult<EuropePMCCoreResult>) o);
 		}
 
 		public QueryBuilder between(Optional<LocalDate> from, Optional<LocalDate> to) {
@@ -178,7 +178,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,Record
 		// synonym=false/true
 		// resultType=idlist/lite/core
 		// POST
-		return buildQuery(text).executeLite().get();
+		return buildQuery(text).executeLite().orElse(EuropePMCListResult.empty(EuropePMCLiteResult.class));
 	}
 	
 	public EuropePMCListResult<EuropePMCCoreResult> fullSearch(String text) {
@@ -193,7 +193,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,Record
 		// synonym=false/true
 		// resultType=idlist/lite/core
 		// POST
-		return buildQuery(text).executeFull().get();
+		return buildQuery(text).executeFull().orElse(EuropePMCListResult.empty(EuropePMCCoreResult.class));
 	}
 	
 	public EuropePMCListResult<EuropePMCCitation> citations(DataSources source, String id) {

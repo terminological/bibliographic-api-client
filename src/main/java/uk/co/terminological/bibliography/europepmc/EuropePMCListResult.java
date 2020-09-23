@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
 
@@ -43,6 +44,11 @@ public class EuropePMCListResult<X extends ExtensibleJson> extends ExtensibleJso
 			super(EuropePMCLiteResult.class,raw);
 		}
 	}
+	
+	public static <Y extends ExtensibleJson> EuropePMCListResult<Y> empty(Class<Y> clz) {
+		return new EuropePMCListResult<Y>(clz, JsonNodeFactory.instance.arrayNode());
+	}
+	
 	
 	public static class Core extends EuropePMCListResult<EuropePMCCoreResult> {
 		public Core(JsonNode raw) {

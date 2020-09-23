@@ -46,7 +46,7 @@ public abstract class CachingApiClient {
 	protected CachingApiClient(Optional<Path> optional, TokenBucket ratelimiter) {
 		this.client = Client.create();
 		client.setConnectTimeout(1000);
-		client.setReadTimeout(1000);
+		client.setReadTimeout(3000);
 		if (optional.isPresent()) {
 			StreamExceptions.tryRethrow(t -> Files.createDirectories(optional.get()));
 			this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()

@@ -69,7 +69,7 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 	
 	private ApiClient(String configFile, String cacheDir) throws IOException {
 		Path filePath = Paths.get(configFile.replaceFirst("^~", System.getProperty("user.home")));
-		Path cacheDir2 = Paths.get(cacheDir.replace("^~", System.getProperty("user.home")));
+		Path cacheDir2 = Paths.get(cacheDir.replaceFirst("^~", System.getProperty("user.home")));
 		this.api = BibliographicApis.create(filePath, cacheDir2);
 	}
 	

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>com.github.terminological</groupId>
-	<version>master-SNAPSHOT</version>
+	<version>native-rjava-SNAPSHOT</version>
 	<artifactId>bibliographic-api-client</artifactId>
 	<packaging>jar</packaging>
 
@@ -105,10 +105,10 @@
 			<version>2.0.0</version>
 		</dependency>
 		<dependency>
-<!-- 			<groupId>com.github.terminological</groupId> -->
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
+<!-- 			<groupId>uk.co.terminological</groupId> -->
 			<artifactId>r-jsr223-runtime</artifactId>
-			<version>1.04</version>
+			<version>1.05</version>
 		</dependency>
 		<dependency>
 <!-- 			<groupId>com.github.terminological</groupId> -->
@@ -120,6 +120,12 @@
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.terminological</groupId>
+			<artifactId>fluentsheet</artifactId>
+			<version>master-SNAPSHOT</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -158,10 +164,10 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- <groupId>com.github.terminological</groupId>-->
-				<groupId>uk.co.terminological</groupId>
+				<groupId>com.github.terminological</groupId>
+<!-- 				<groupId>uk.co.terminological</groupId> -->
 				<artifactId>r-jsr223-maven-plugin</artifactId>
-				<version>1.04</version>
+				<version>1.05</version>
 				<configuration>
 					<packageData>
 						<title>Bibliographic Apis</title>
