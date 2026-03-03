@@ -1,0 +1,1461 @@
+<article article-type="article" specific-use="production"
+	xml:lang="en" xmlns:hw="org.highwire.hpp"
+	xmlns:mml="http://www.w3.org/1998/Math/MathML"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ali="http://www.niso.org/schemas/ali/1.0/"
+	xmlns:ref="http://schema.highwire.org/Reference"
+	xmlns:hwp="http://schema.highwire.org/Journal"
+	xmlns:l="http://schema.highwire.org/Linking"
+	xmlns:r="http://schema.highwire.org/Revision"
+	xmlns:x="http://www.w3.org/1999/xhtml"
+	xmlns:app="http://www.w3.org/2007/app"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:nlm="http://schema.highwire.org/NLM/Journal"
+	xmlns:a="http://www.w3.org/2005/Atom"
+	xmlns:c="http://schema.highwire.org/Compound"
+	xmlns:hpp="http://schema.highwire.org/Publishing">
+	<front>
+		<journal-meta>
+			<journal-id journal-id-type="hwp">medrxiv</journal-id>
+			<journal-id journal-id-type="publisher-id">MEDRXIV</journal-id>
+			<journal-title>medRxiv</journal-title>
+			<abbrev-journal-title abbrev-type="publisher">medRxiv</abbrev-journal-title>
+			<publisher>
+				<publisher-name>Cold Spring Harbor Laboratory Press</publisher-name>
+			</publisher>
+		</journal-meta>
+		<article-meta>
+			<article-id pub-id-type="doi">10.1101/2020.03.19.20038968</article-id>
+			<article-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1</article-id>
+			<article-id pub-id-type="other" hwp:sub-type="pisa-master">medrxiv;2020.03.19.20038968</article-id>
+			<article-id pub-id-type="other" hwp:sub-type="slug">2020.03.19.20038968</article-id>
+			<article-id pub-id-type="other" hwp:sub-type="atom-slug">2020.03.19.20038968</article-id>
+			<article-id pub-id-type="other" hwp:sub-type="tag">2020.03.19.20038968</article-id>
+			<article-version>1.1</article-version>
+			<article-categories>
+				<subj-group subj-group-type="hwp-journal-coll"
+					hwp:journal-coll-id="Epidemiology" hwp:journal="medrxiv">
+					<subject>Epidemiology</subject>
+				</subj-group>
+			</article-categories>
+			<title-group>
+				<article-title hwp:id="article-title-1">Modelling the epidemiological
+					trend and behavior of COVID-19 in Italy</article-title>
+			</title-group>
+			<author-notes hwp:id="author-notes-1">
+				<corresp id="cor1" hwp:id="corresp-1"
+					hwp:rev-id="xref-corresp-1-1">
+					<label>*</label>
+					<bold>Corresponding authors:</bold>
+					Alessandro Rovetta, Mensana srls research and disclosure division,
+					Via Moro Aldo 5 - 25124 Brescia, Italy., Email:
+					<email hwp:id="email-1">rovetta.mresearch@gmail.com</email>
+					, Phone: +39-3927112808
+				</corresp>
+			</author-notes>
+			<contrib-group hwp:id="contrib-group-1">
+				<contrib contrib-type="author" corresp="yes"
+					hwp:id="contrib-1">
+					<name name-style="western" hwp:sortable="Rovetta Alessandro">
+						<surname>Rovetta</surname>
+						<given-names>Alessandro</given-names>
+					</name>
+					<xref ref-type="aff" rid="a1" hwp:id="xref-aff-1-1"
+						hwp:rel-id="aff-1">1</xref>
+					<xref ref-type="corresp" rid="cor1" hwp:id="xref-corresp-1-1"
+						hwp:rel-id="corresp-1">*</xref>
+				</contrib>
+				<contrib contrib-type="author" hwp:id="contrib-2">
+					<contrib-id contrib-id-type="orcid"
+						authenticated="false">http://orcid.org/0000-0002-0581-7808</contrib-id>
+					<name name-style="western"
+						hwp:sortable="Bhagavathula Akshaya Srikanth">
+						<surname>Bhagavathula</surname>
+						<given-names>Akshaya Srikanth</given-names>
+					</name>
+					<xref ref-type="aff" rid="a2" hwp:id="xref-aff-2-1"
+						hwp:rel-id="aff-2">2</xref>
+					<object-id pub-id-type="other" hwp:sub-type="orcid"
+						xlink:href="http://orcid.org/0000-0002-0581-7808" />
+				</contrib>
+				<aff id="a1" hwp:id="aff-1" hwp:rev-id="xref-aff-1-1">
+					<label>1</label>
+					<institution hwp:id="institution-1">Mensana srls research and
+						disclosure division</institution>
+					, Via Moro Aldo 5 - 25124 Brescia,
+					<country>Italy</country>
+				</aff>
+				<aff id="a2" hwp:id="aff-2" hwp:rev-id="xref-aff-2-1">
+					<label>2</label>
+					<institution hwp:id="institution-2">Institute of Public Health, College
+						of Medicine and Health Sciences, UAE University</institution>
+					, Al Ain, UAE
+				</aff>
+			</contrib-group>
+			<pub-date pub-type="epub-original" date-type="pub"
+				publication-format="electronic" hwp:start="2020">
+				<year>2020</year>
+			</pub-date>
+			<pub-date pub-type="hwp-created"
+				hwp:start="2020-03-23T05:24:09-07:00">
+				<day>23</day>
+				<month>3</month>
+				<year>2020</year>
+			</pub-date>
+			<pub-date pub-type="hwp-received"
+				hwp:start="2020-03-23T05:24:09-07:00">
+				<day>23</day>
+				<month>3</month>
+				<year>2020</year>
+			</pub-date>
+			<pub-date pub-type="epub"
+				hwp:start="2020-03-23T05:27:15-07:00">
+				<day>23</day>
+				<month>3</month>
+				<year>2020</year>
+			</pub-date>
+			<pub-date pub-type="epub-version"
+				hwp:start="2020-03-23T05:27:15-07:00">
+				<day>23</day>
+				<month>3</month>
+				<year>2020</year>
+			</pub-date>
+			<elocation-id>2020.03.19.20038968</elocation-id>
+			<history hwp:id="history-1">
+				<date date-type="received" hwp:start="2020-03-19">
+					<day>19</day>
+					<month>3</month>
+					<year>2020</year>
+				</date>
+				<date date-type="rev-recd" hwp:start="2020-03-19">
+					<day>19</day>
+					<month>3</month>
+					<year>2020</year>
+				</date>
+				<date date-type="accepted" hwp:start="2020-03-23">
+					<day>23</day>
+					<month>3</month>
+					<year>2020</year>
+				</date>
+			</history>
+			<permissions>
+				<copyright-statement
+					hwp:id="copyright-statement-1">© 2020, Posted by Cold Spring Harbor Laboratory</copyright-statement>
+				<copyright-year>2020</copyright-year>
+				<license license-type="creative-commons"
+					xlink:href="http://creativecommons.org/licenses/by-nc/4.0/"
+					hwp:id="license-1">
+					<p hwp:id="p-1">
+						This pre-print is available under a Creative Commons License
+						(Attribution-NonCommercial 4.0 International), CC BY-NC 4.0, as
+						described at
+						<ext-link l:rel="related" l:ref-type="uri"
+							l:ref="http://creativecommons.org/licenses/by-nc/4.0/"
+							ext-link-type="uri"
+							xlink:href="http://creativecommons.org/licenses/by-nc/4.0/"
+							hwp:id="ext-link-1">http://creativecommons.org/licenses/by-nc/4.0/</ext-link>
+					</p>
+				</license>
+			</permissions>
+			<self-uri xlink:href="20038968.pdf" content-type="pdf"
+				xlink:role="full-text" />
+			<self-uri l:ref="forthcoming:yes"
+				c:role="http://schema.highwire.org/variant/abstract"
+				xlink:role="abstract" content-type="xhtml+xml" hwp:variant="yes" />
+			<self-uri l:ref="forthcoming:yes"
+				c:role="http://schema.highwire.org/variant/external-links"
+				xlink:role="external-links" content-type="xhtml+xml"
+				hwp:variant="yes" />
+			<self-uri l:ref="forthcoming:yes"
+				c:role="http://schema.highwire.org/variant/full-text"
+				xlink:href="file:/content/medrxiv/vol0/issue2020/pdf/2020.03.19.20038968v1.pdf"
+				hwp:variant="yes" content-type="pdf" xlink:role="full-text" />
+			<self-uri l:ref="forthcoming:yes"
+				c:role="http://schema.highwire.org/variant/full-text"
+				xlink:role="full-text" content-type="xhtml+xml" hwp:variant="yes" />
+			<self-uri l:ref="forthcoming:yes"
+				c:role="http://schema.highwire.org/variant/source"
+				xlink:role="source" content-type="xml" xlink:show="none"
+				hwp:variant="yes" />
+			<self-uri l:ref="forthcoming:yes"
+				c:role="http://schema.highwire.org/variant/original"
+				xlink:role="original" content-type="xml" xlink:show="none"
+				hwp:variant="yes" xlink:href="20038968.xml" />
+			<self-uri content-type="abstract"
+				xlink:href="file:/content/medrxiv/vol0/issue2020/abstracts/2020.03.19.20038968v1/2020.03.19.20038968v1.htslp" />
+			<self-uri content-type="fulltext"
+				xlink:href="file:/content/medrxiv/vol0/issue2020/fulltext/2020.03.19.20038968v1/2020.03.19.20038968v1.htslp" />
+			<abstract hwp:id="abstract-1">
+				<title hwp:id="title-1">Abstract</title>
+				<p hwp:id="p-2">As of March 16, 2020, over 185,000 across the world,
+					Italy became the red hotspot for the COVID-19 pandemic after China.
+					With over 35,000 cases and 2900 deaths reported in the month of
+					March in Italy, it is necessary to stimulate epidemic trend to
+					understand the behavior of COVID-19 in Italy. By S.E.I.R.
+					simulation, we estimated the most representative epidemic
+					parameters occurred from March 1 to 14, 2020, thus being able to
+					evaluate the consistency of the containment rules and identify
+					possible Sars-Cov-2 local mutations. Our estimations are based on
+					some assumptions and limitations exited.</p>
+			</abstract>
+			<kwd-group kwd-group-type="author" hwp:id="kwd-group-1">
+				<title hwp:id="title-2">Keywords</title>
+				<kwd hwp:id="kwd-1">COVID-19</kwd>
+				<kwd hwp:id="kwd-2">coronavirus</kwd>
+				<kwd hwp:id="kwd-3">contamination</kwd>
+				<kwd hwp:id="kwd-4">novel coronavirus</kwd>
+				<kwd hwp:id="kwd-5">Sars-Cov-2</kwd>
+				<kwd hwp:id="kwd-6">Europe</kwd>
+				<kwd hwp:id="kwd-7">Italy</kwd>
+			</kwd-group>
+			<counts>
+				<page-count count="19" />
+			</counts>
+			<custom-meta-wrap>
+				<custom-meta hwp:id="custom-meta-1">
+					<meta-name>has-earlier-version</meta-name>
+					<meta-value>yes</meta-value>
+				</custom-meta>
+			</custom-meta-wrap>
+		</article-meta>
+		<notes hwp:id="notes-1">
+			<notes notes-type="competing-interest-statement"
+				hwp:id="notes-2">
+				<title hwp:id="title-3">Competing Interest Statement</title>
+				<p hwp:id="p-3">The authors have declared no competing interest.</p>
+			</notes>
+			<notes notes-type="financial-disclosure" hwp:id="notes-3">
+				<title hwp:id="title-4">Funding Statement</title>
+				<p hwp:id="p-4">No external funding was received.</p>
+			</notes>
+			<notes notes-type="disclosures" hwp:id="notes-4">
+				<title hwp:id="title-5">Author Declarations</title>
+				<p hwp:id="p-5">All relevant ethical guidelines have been followed; any
+					necessary IRB and/or ethics committee approvals have been obtained
+					and details of the IRB/oversight body are included in the
+					manuscript.</p>
+				<p hwp:id="p-6">Yes</p>
+				<p hwp:id="p-7">All necessary patient/participant consent has been
+					obtained and the appropriate institutional forms have been
+					archived.</p>
+				<p hwp:id="p-8">Yes</p>
+				<p hwp:id="p-9">I understand that all clinical trials and any other
+					prospective interventional studies must be registered with an
+					ICMJE-approved registry, such as ClinicalTrials.gov. I confirm that
+					any such study reported in the manuscript has been registered and
+					the trial registration ID is provided (note: if posting a
+					prospective study registered retrospectively, please provide a
+					statement in the trial ID field explaining why the study was not
+					registered in advance).</p>
+				<p hwp:id="p-10">Yes</p>
+				<p hwp:id="p-11">I have followed all appropriate research reporting
+					guidelines and uploaded the relevant EQUATOR Network research
+					reporting checklist(s) and other pertinent material as
+					supplementary files, if applicable.</p>
+				<p hwp:id="p-12">Yes</p>
+			</notes>
+		</notes>
+	</front>
+	<body>
+		<sec id="s1" hwp:id="sec-1">
+			<title hwp:id="title-6">Introduction</title>
+			<p hwp:id="p-13">
+				The current surge of COVID-19 pandemic is devastating globally, with
+				over 200,000 cases and more than 8600 deaths reported [
+				<xref ref-type="bibr" rid="c1" hwp:id="xref-ref-1-1"
+					hwp:rel-id="ref-1">1</xref>
+				]. In Europe, COVID-19 cases are most dramatically started to
+				increase from the first week of March 2020. Of these, Italy is
+				grappling with the worst outbreak, with over 35,713 confirmed cases
+				and around 3000 deaths by March 18, 2020 [
+				<xref ref-type="bibr" rid="c1" hwp:id="xref-ref-1-2"
+					hwp:rel-id="ref-1">1</xref>
+				-
+				<xref ref-type="bibr" rid="c5" hwp:id="xref-ref-5-1"
+					hwp:rel-id="ref-5">5</xref>
+				]. This exponential increase in COVID-19 positive cases in Italy
+				raised turmoil, and the government decree to a lockdown of the
+				entire country [
+				<xref ref-type="bibr" rid="c1" hwp:id="xref-ref-1-3"
+					hwp:rel-id="ref-1">1</xref>
+				]. Given the seriousness of the situation, it is absolutely
+				necessary not only an immediate intervention but also a criterion
+				for assessing its effectiveness.
+			</p>
+			<p hwp:id="p-14">
+				Article on modeling epidemic transition of COVID-19 have been
+				published [
+				<xref ref-type="bibr" rid="c1" hwp:id="xref-ref-1-4"
+					hwp:rel-id="ref-1">1</xref>
+				-
+				<xref ref-type="bibr" rid="c8" hwp:id="xref-ref-8-1"
+					hwp:rel-id="ref-8">8</xref>
+				] and based on the previous publication from China, South Korea,
+				Iran, and Japan presented the estimation of epidemic trends and
+				transmission rates [
+				<xref ref-type="bibr" rid="c1" hwp:id="xref-ref-1-5"
+					hwp:rel-id="ref-1">1</xref>
+				-
+				<xref ref-type="bibr" rid="c8" hwp:id="xref-ref-8-2"
+					hwp:rel-id="ref-8">8</xref>
+				]. Through this research, we evaluated the consistency of the
+				containment rules and identified possible SARS-CoV-2 local mutation
+				using the S.E.I.R mathematical model. We used the most
+				representative epidemic parameters that occurred during the first
+				half of March 2020 to predict the trend of infections. Therefore, to
+				assess the effectiveness of the containment measures, it will signal
+				the presence of an evolutionary mutation. To do this, it will be
+				sufficient to compare the general trend foreseen by the S.E.I.R.
+				with the real Italian population.
+			</p>
+		</sec>
+		<sec id="s2" hwp:id="sec-2">
+			<title hwp:id="title-7">Methods</title>
+			<p hwp:id="p-15">To carry out this study, we used the most recent data,
+				found in the scientific literature relating to COVID-19 total and
+				active cases, deaths, recoveries, and all epidemic parameters, have
+				been used. Since the Chinese situation has provided the most
+				information, great statistical importance was given to the
+				Sars-Cov-2 evolution in the Hubei region, with the implicit
+				assumption of “very significant local mutations” absence necessary
+				for generalizing the reports through classical inference. The
+				statistics collected on virus mortality were first divided by age
+				group and then recalibrated on the Italian demography, in order to
+				be as representative as possible. To do this, we considered the most
+				representative population of COVID-19 cases reported between March,
+				1-14, 2020, the number of infected persons necessary to approach the
+				required mortality rate was added to the correct values.</p>
+		</sec>
+		<sec id="s3" hwp:id="sec-3">
+			<title hwp:id="title-8">S.E.I.R Modelling</title>
+			<p hwp:id="p-16">To obtain a more realistic trend and assuming true the
+				probable “patients non-relapse”, and we applied S.E.I.R. model to
+				predict the virus progress in Italy. As a note, it is not possible
+				to estimate the containment measures taken by the government.
+				However, at the same time, assuming that only half of the population
+				was susceptible to the virus precisely due to the above containment
+				measures. Thanks to the comparison between real and theoretical
+				evolution, it is likely to estimate the presence of essential
+				mutations and/or the limitation strategy effectiveness through
+				similarities, anomalies, or substantial deviations from each other.
+				We used S.E.I.R. differential equations and non-linear methods to
+				resolve the gaps analytically. An interactive algorithm was
+				developed using C++ software (version) to find a solution through a
+				finite discretization method. The total population number has been
+				considered constant because of the very low deaths/population ratio.</p>
+		</sec>
+		<sec id="s4" hwp:id="sec-4">
+			<title hwp:id="title-9">Software iterative algorithm</title>
+			<p hwp:id="p-17">By entering the initial values for the incubation
+				time1/σ, recovery time1/γ, basic reproduction number R0, and number
+				of infected I0 on March 1, 2020, the software prints the S.E.I.R.
+				values day by day. The best epidemic parameters were estimated
+				through continuous iteration until the “closest values to the real
+				ones” were reached until March 14, 2020. The number of initial
+				incubates was calculated with the formula E0=R0·I0.</p>
+		</sec>
+		<sec id="s5" hwp:id="sec-5">
+			<title hwp:id="title-10">Results</title>
+			<sec id="s5a" hwp:id="sec-6">
+				<title hwp:id="title-11">Epidemic parameters</title>
+				<p hwp:id="p-18">After the reconstruction of the real data on COVID-19 in
+					Italy in the period March 2020, 1-14, through the above methods,
+					the best estimates obtained for the Italian epidemic parameters are
+					1/σ, 1/γ, R0 = 3.51 ± 5%, I0 = 3350 ± 20%.</p>
+			</sec>
+			<sec id="s5b" hwp:id="sec-7">
+				<title hwp:id="title-12">Best statistical forecasts</title>
+				<p hwp:id="p-19">
+					The model predicts the following values for the next 7 days (March
+					2020, 15-22) with “
+					<italic toggle="yes">D</italic>
+					” deaths number:
+				</p>
+				<p hwp:id="p-20">
+					March, 15:
+					<italic toggle="yes">S</italic>
+					= 2.99308·10^7;
+					<italic toggle="yes">E</italic>
+					= 21504;
+					<italic toggle="yes">I</italic>
+					= 40651;
+					<italic toggle="yes">R</italic>
+					= 18854;
+					<italic toggle="yes">D</italic>
+					= 1904;
+				</p>
+				<p hwp:id="p-21">
+					March, 16:
+					<italic toggle="yes">S</italic>
+					= 2.99207·10^7;
+					<italic toggle="yes">E</italic>
+					= 23988;
+					<italic toggle="yes">I</italic>
+					= 45363;
+					<italic toggle="yes">R</italic>
+					= 21719;
+					<italic toggle="yes">D</italic>
+					= 2124;
+				</p>
+				<p hwp:id="p-22">
+					March, 17:
+					<italic toggle="yes">S</italic>
+					= 2.99095·10^7;
+					<italic toggle="yes">E</italic>
+					= 26759;
+					<italic toggle="yes">I</italic>
+					= 50619;
+					<italic toggle="yes">R</italic>
+					= 24917;
+					<italic toggle="yes">D</italic>
+					= 2417;
+				</p>
+				<p hwp:id="p-23">
+					March, 18:
+					<italic toggle="yes">S</italic>
+					= 2.98970·10^7;
+					<italic toggle="yes">E</italic>
+					= 29849;
+					<italic toggle="yes">I</italic>
+					= 56481;
+					<italic toggle="yes">R</italic>
+					= 28486;
+					<italic toggle="yes">D</italic>
+					= 2719;
+				</p>
+				<p hwp:id="p-24">
+					March, 19:
+					<italic toggle="yes">S</italic>
+					= 2.98830·10^7;
+					<italic toggle="yes">E</italic>
+					= 33293;
+					<italic toggle="yes">I</italic>
+					= 63019;
+					<italic toggle="yes">R</italic>
+					= 32467;
+					<italic toggle="yes">D</italic>
+					= 3056;
+				</p>
+				<p hwp:id="p-25">
+					March, 20:
+					<italic toggle="yes">S</italic>
+					= 2.98674·10^7;
+					<italic toggle="yes">E</italic>
+					= 37132;
+					<italic toggle="yes">I</italic>
+					= 70308;
+					<italic toggle="yes">R</italic>
+					= 36909;
+					<italic toggle="yes">D</italic>
+					= 3431;
+				</p>
+				<p hwp:id="p-26">
+					March, 21:
+					<italic toggle="yes">S</italic>
+					= 2.98501·10^7;
+					<italic toggle="yes">E</italic>
+					= 41410;
+					<italic toggle="yes">I</italic>
+					= 78437;
+					<italic toggle="yes">R</italic>
+					= 41865;
+					<italic toggle="yes">D</italic>
+					= 3850;
+				</p>
+				<p hwp:id="p-27">
+					March, 22:
+					<italic toggle="yes">S</italic>
+					= 2.98307·10^7;
+					<italic toggle="yes">E</italic>
+					= 47394;
+					<italic toggle="yes">I</italic>
+					= 87500;
+					<italic toggle="yes">R</italic>
+					= 47394;
+					<italic toggle="yes">D</italic>
+					= 4317;
+				</p>
+				<p hwp:id="p-28">
+					These values obviously refer to the population with the constant
+					mortality rate of 3.2%; however, the real number of deaths must be
+					strictly less than the theoretical one expected or we will talk
+					about mutation. Thus, thanks to the results obtained from the
+					application of the S.E.I.R. model we can foresee three possible
+					scenarios: -If, in Italy, the real next-days trend of the total
+					infected number will be lower than that shown in
+					<xref rid="fig1" ref-type="fig" hwp:id="xref-fig-1-1"
+						hwp:rel-id="F1">figure 1</xref>
+					, we can assume the following events set out in order of
+					probability: the containment measures adopted 10 days ago are
+					taking effect; Sars-Cov-2 has undergone a significant
+					anti-evolutionary mutation. If, in Italy, the real next-days trend
+					of the total infected number will be equal than that shown in
+					<xref rid="fig1" ref-type="fig" hwp:id="xref-fig-1-2"
+						hwp:rel-id="F1">figure 1</xref>
+					. We assume the following events set out in order of probability:
+					the containment measures adopted 10 days ago are not taking effect;
+					the containment measures adopted 10 days ago are taking effect and
+					Sars-Cov-2 has undergone a significant evolutionary mutation. If,
+					in Italy, the real next-days trend of the total infected number
+					will be higher than that shown in
+					<xref rid="fig1" ref-type="fig" hwp:id="xref-fig-1-3"
+						hwp:rel-id="F1">figure 1</xref>
+					. We assume the following events set out in order of probability:
+					the containment measures adopted 10 days ago are not taking effect
+					and Sars-Cov-2 has undergone a significant evolutionary mutation;
+					the S.E.I.R model is no-more representative of the COVID-19 Italian
+					case and we should utilize the S.E.I.R. model.
+				</p>
+				<fig id="fig1" position="float" fig-type="figure"
+					orientation="portrait" hwp:id="F1"
+					hwp:rev-id="xref-fig-1-1 xref-fig-1-2 xref-fig-1-3">
+					<object-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1/FIG1</object-id>
+					<object-id pub-id-type="other" hwp:sub-type="slug">F1</object-id>
+					<object-id pub-id-type="publisher-id">fig1</object-id>
+					<label>Figure 1:</label>
+					<caption hwp:id="caption-1">
+						<title hwp:id="title-13">Test-3 – Italy infected trend.</title>
+					</caption>
+					<graphic xlink:href="20038968v1_fig1" position="float"
+						orientation="portrait" hwp:id="graphic-1" />
+				</fig>
+				<fig id="fig2" position="float" fig-type="figure"
+					orientation="portrait" hwp:id="F2">
+					<object-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1/FIG2</object-id>
+					<object-id pub-id-type="other" hwp:sub-type="slug">F2</object-id>
+					<object-id pub-id-type="publisher-id">fig2</object-id>
+					<label>Figure 2:</label>
+					<caption hwp:id="caption-2">
+						<title hwp:id="title-14">Test 3 – Italy infected trend, gaussian curve
+							fit.</title>
+					</caption>
+					<graphic xlink:href="20038968v1_fig2" position="float"
+						orientation="portrait" hwp:id="graphic-2" />
+				</fig>
+			</sec>
+			<sec id="s5c" hwp:id="sec-8">
+				<title hwp:id="title-15">Comparison with real national and per provinces
+					data</title>
+				<p hwp:id="p-29">
+					Based primarily on the deaths number i.e. data with the lower
+					margin of error, we compare real and theoretical data [
+					<xref ref-type="bibr" rid="c14" hwp:id="xref-ref-14-1"
+						hwp:rel-id="ref-14">14</xref>
+					]:
+				</p>
+				<table-wrap id="utbl1" orientation="portrait"
+					position="float" hwp:id="T1">
+					<object-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1/UTBL1</object-id>
+					<object-id pub-id-type="other" hwp:sub-type="slug">T1</object-id>
+					<object-id pub-id-type="publisher-id">utbl1</object-id>
+					<graphic xlink:href="20038968v1_utbl1" position="float"
+						orientation="portrait" hwp:id="graphic-3" />
+				</table-wrap>
+				<p hwp:id="p-30">Even considering an admissible “theoretical-estimates
+					statistical error” of ± 5% these values could not be accepted since
+					the trend indicates a faster growth than that predicted by the
+					model with a breakeven point between 15 and 16 March and a
+					percentage difference in net growth. Deepening the discussion and
+					going to analyze the cases region by region, a very significant
+					result turns out: with the exception of Lombardy, the trend in the
+					number of infected is very good [18]. Unfortunately, this figure is
+					extremely negative since it indicates the possible presence of a
+					much more aggressive and/or contagious evolutionary mutation in
+					Lombardy: in fact, the weight of Lombardy in the national
+					statistics of total dead and infected is very high and, moreover,
+					the slope of the growth curve of both it is much greater even than
+					in the second region with the most infected. Quantifying, Lombardy
+					went from 5791 cases on March 10 to 17713 on March 18, i.e. a slope
+					of 1490 cases/day; Emilia Romagna, second region by growth and
+					number of cases, has an average slope over the same period of time
+					equal to 374 cases/day (1533 to 4525 cases). Going further, we can
+					see how three cities in particular are causing alarm: Brescia,
+					Bergamo and Milan, with similar angular coefficients. As if that
+					were not enough, Lombardy holds 66% of national deaths despite
+					representing “only” 49% of national cases; in addition, the number
+					of Deaths and Infections grow at a rate much higher than the
+					S.E.I.R. model, despite all government restrictions.</p>
+			</sec>
+		</sec>
+		<sec id="s6" hwp:id="sec-9">
+			<label>1.</label>
+			<title hwp:id="title-16">Choice of model</title>
+			<p hwp:id="p-31">Given that</p>
+			<list list-type="simple" hwp:id="list-1">
+				<list-item hwp:id="list-item-1">
+					<p hwp:id="p-32">
+						It seems unlikely that the virus, without significantly changing,
+						could infect a patient again [
+						<xref ref-type="bibr" rid="c1" hwp:id="xref-ref-1-6"
+							hwp:rel-id="ref-1">1</xref>
+						,
+						<xref ref-type="bibr" rid="c2" hwp:id="xref-ref-2-1"
+							hwp:rel-id="ref-2">2</xref>
+						] [
+						<xref ref-type="bibr" rid="c12" hwp:id="xref-ref-12-1"
+							hwp:rel-id="ref-12">12</xref>
+						],
+					</p>
+				</list-item>
+				<list-item hwp:id="list-item-2">
+					<p hwp:id="p-33">
+						the mortality rate in Italy is too low to be significant in the
+						short term [
+						<xref ref-type="bibr" rid="c8" hwp:id="xref-ref-8-3"
+							hwp:rel-id="ref-8">8</xref>
+						],
+					</p>
+				</list-item>
+				<list-item hwp:id="list-item-3">
+					<p hwp:id="p-34">
+						young children appear to have a secondary role in the spread of
+						the infection [
+						<xref ref-type="bibr" rid="c8" hwp:id="xref-ref-8-4"
+							hwp:rel-id="ref-8">8</xref>
+						][
+						<xref ref-type="bibr" rid="c17" hwp:id="xref-ref-17-1"
+							hwp:rel-id="ref-17">17</xref>
+						],
+					</p>
+				</list-item>
+			</list>
+			<p hwp:id="p-35">We will investigate the possible scenarios through
+				S.E.I.R. model.</p>
+			<sec id="s6a" hwp:id="sec-10">
+				<label>1.1</label>
+				<title hwp:id="title-17">S.E.I.R. model: Italy’s COVID-19 evolution</title>
+				<p hwp:id="p-36">
+					Using the discretization carried out in the previous study
+					“Mathematical-statistical modeling of COVID-19 on the restricted
+					population” [
+					<xref ref-type="bibr" rid="c8" hwp:id="xref-ref-8-5"
+						hwp:rel-id="ref-8">8</xref>
+					], a new C++ software was created to print the values of the
+					S.E.I.R. day by day until a specific date and/or situation(2).
+					However, unlike the aforementioned study, the prediction period
+					will be extended to a certain number of days in order to verify the
+					effectiveness of the containment measures in Italy.
+				</p>
+			</sec>
+		</sec>
+		<sec id="s7" hwp:id="sec-11">
+			<label>2.</label>
+			<title hwp:id="title-18">Data analysis</title>
+			<p hwp:id="p-37">
+				Since no European or international standard for data collection has
+				been established, one of the crucial points of this analysis is the
+				interpretation of the information available. On February 27, in
+				Italy, a real “communicative turnaround” was announced so that only
+				the most important symptomatic cases would be publicly counted from
+				then on [
+				<xref ref-type="bibr" rid="c6" hwp:id="xref-ref-6-1"
+					hwp:rel-id="ref-6">6</xref>
+				]. Since there do not appear to have been significant large-scale
+				mutations and that a good amount of data is now available, we expect
+				the WHO mortality data to be valid in Italy as well [
+				<xref ref-type="bibr" rid="c13" hwp:id="xref-ref-13-1"
+					hwp:rel-id="ref-13">13</xref>
+				] [
+				<xref rid="tbl1" ref-type="table" hwp:id="xref-table-wrap-2-1"
+					hwp:rel-id="T2">Table 1</xref>
+				].
+			</p>
+			<table-wrap id="tbl1" orientation="portrait"
+				position="float" hwp:id="T2" hwp:rev-id="xref-table-wrap-2-1">
+				<object-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1/TBL1</object-id>
+				<object-id pub-id-type="other" hwp:sub-type="slug">T2</object-id>
+				<object-id pub-id-type="publisher-id">tbl1</object-id>
+				<label>Table 1:</label>
+				<caption hwp:id="caption-3">
+					<p hwp:id="p-38">
+						Italy Ministry of Health March 2020, 1-14 official data [
+						<xref ref-type="bibr" rid="c14" hwp:id="xref-ref-14-2"
+							hwp:rel-id="ref-14">14</xref>
+						].
+					</p>
+				</caption>
+				<graphic xlink:href="20038968v1_tbl1" position="float"
+					orientation="portrait" hwp:id="graphic-4" />
+			</table-wrap>
+			<p hwp:id="p-39">
+				The more recent study about Sars-Cov-2 mortality on symptomatic and
+				asymptomatic COVID-19 patients in the Hubei region shows the
+				following Sars-Cov-2 mortality per age-groups [
+				<xref ref-type="bibr" rid="c3" hwp:id="xref-ref-3-1"
+					hwp:rel-id="ref-3">3</xref>
+				] [
+				<xref rid="tbl2" ref-type="table" hwp:id="xref-table-wrap-3-1"
+					hwp:rel-id="T3">Table 2</xref>
+				].
+			</p>
+			<table-wrap id="tbl2" orientation="portrait"
+				position="float" hwp:id="T3" hwp:rev-id="xref-table-wrap-3-1">
+				<object-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1/TBL2</object-id>
+				<object-id pub-id-type="other" hwp:sub-type="slug">T3</object-id>
+				<object-id pub-id-type="publisher-id">tbl2</object-id>
+				<label>Table 2:</label>
+				<caption hwp:id="caption-4">
+					<p hwp:id="p-40">The more recent Hubei death-rate per age.</p>
+				</caption>
+				<graphic xlink:href="20038968v1_tbl2" position="float"
+					orientation="portrait" hwp:id="graphic-5" />
+			</table-wrap>
+			<p hwp:id="p-41">
+				Since the Italian population is distributed according to the
+				following age-percentages [
+				<xref ref-type="bibr" rid="c15" hwp:id="xref-ref-15-1"
+					hwp:rel-id="ref-15">15</xref>
+				][
+				<xref ref-type="bibr" rid="c3" hwp:id="xref-ref-3-2"
+					hwp:rel-id="ref-3">3</xref>
+				] [
+				<xref rid="tbl3" ref-type="table" hwp:id="xref-table-wrap-4-1"
+					hwp:rel-id="T4">Table 3</xref>
+				]
+			</p>
+			<table-wrap id="tbl3" orientation="portrait"
+				position="float" hwp:id="T4" hwp:rev-id="xref-table-wrap-4-1">
+				<object-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1/TBL3</object-id>
+				<object-id pub-id-type="other" hwp:sub-type="slug">T4</object-id>
+				<object-id pub-id-type="publisher-id">tbl3</object-id>
+				<label>Table 3:</label>
+				<caption hwp:id="caption-5">
+					<p hwp:id="p-42">Italian population per age.</p>
+				</caption>
+				<graphic xlink:href="20038968v1_tbl3" position="float"
+					orientation="portrait" hwp:id="graphic-6" />
+			</table-wrap>
+			<p hwp:id="p-43">
+				<disp-formula id="ueqn1" hwp:id="disp-formula-1">
+					<alternatives hwp:id="alternatives-1">
+						<graphic xlink:href="20038968v1_ueqn1.gif"
+							position="float" orientation="portrait" hwp:id="graphic-7" />
+					</alternatives>
+				</disp-formula>
+			</p>
+			<p hwp:id="p-44">
+				For this reason, it makes sense to conclude that the Italian
+				COVID-19 death rate is exaggeratedly overestimated if we rely on
+				Ministry of Health data. On the other side, the true-infect number
+				(as the aforementioned “communicative turn” announced) must
+				necessarily be higher. Trying to respect the percentage just
+				calculated we obtain the following
+				<xref rid="tbl4" ref-type="table" hwp:id="xref-table-wrap-5-1"
+					hwp:rel-id="T5">table 4</xref>
+				.
+			</p>
+			<table-wrap id="tbl4" orientation="portrait"
+				position="float" hwp:id="T5"
+				hwp:rev-id="xref-table-wrap-5-1 xref-table-wrap-5-2 xref-table-wrap-5-3 xref-table-wrap-5-4">
+				<object-id pub-id-type="other" hwp:sub-type="pisa">medrxiv;2020.03.19.20038968v1/TBL4</object-id>
+				<object-id pub-id-type="other" hwp:sub-type="slug">T5</object-id>
+				<object-id pub-id-type="publisher-id">tbl4</object-id>
+				<label>Table 4:</label>
+				<caption hwp:id="caption-6">
+					<p hwp:id="p-45">Recalculated Italian data of COVID-19 cases in March,
+						2020</p>
+				</caption>
+				<graphic xlink:href="20038968v1_tbl4" position="float"
+					orientation="portrait" hwp:id="graphic-8" />
+			</table-wrap>
+		</sec>
+		<sec id="s8" hwp:id="sec-12">
+			<label>3</label>
+			<title hwp:id="title-19">Application of the S.E.I.R. predictive model</title>
+			<p hwp:id="p-46">
+				Citing the adapted system of non-linear differential equations and
+				their discretization [
+				<xref ref-type="bibr" rid="c8" hwp:id="xref-ref-8-6"
+					hwp:rel-id="ref-8">8</xref>
+				] and and using the WHO estimated values for incubation and recovery
+				times respectively equal to 1/σ ∈ [3;6] days range[
+				<xref ref-type="bibr" rid="c9" hwp:id="xref-ref-9-1"
+					hwp:rel-id="ref-9">9</xref>
+				] and a generous 1/σ ∈ [15;35] days range (since you can infect even
+				after being healed [
+				<xref ref-type="bibr" rid="c5" hwp:id="xref-ref-5-2"
+					hwp:rel-id="ref-5">5</xref>
+				]), with a R0 ∈ [2;4] [
+				<xref ref-type="bibr" rid="c7" hwp:id="xref-ref-7-1"
+					hwp:rel-id="ref-7">7</xref>
+				] [
+				<xref ref-type="bibr" rid="c10" hwp:id="xref-ref-10-1"
+					hwp:rel-id="ref-10">10</xref>
+				] [
+				<xref ref-type="bibr" rid="c4" hwp:id="xref-ref-4-1"
+					hwp:rel-id="ref-4">4</xref>
+				] we have the following plausible results from our C++ software:
+				<disp-formula id="ueqn2" hwp:id="disp-formula-2">
+					<alternatives hwp:id="alternatives-2">
+						<graphic xlink:href="20038968v1_ueqn2.gif"
+							position="float" orientation="portrait" hwp:id="graphic-9" />
+					</alternatives>
+				</disp-formula>
+			</p>
+			<p hwp:id="p-47">Legend:</p>
+			<list list-type="bullet" hwp:id="list-2">
+				<list-item hwp:id="list-item-4">
+					<p hwp:id="p-48">1/γ is the asymptomatic incubation time;</p>
+				</list-item>
+				<list-item hwp:id="list-item-5">
+					<p hwp:id="p-49">1/σ is the recovery time;</p>
+				</list-item>
+				<list-item hwp:id="list-item-6">
+					<p hwp:id="p-50">R0 is the basic reproduction number;</p>
+				</list-item>
+				<list-item hwp:id="list-item-7">
+					<p hwp:id="p-51">
+						<italic toggle="yes">S</italic>
+						is the number of susceptible people;
+					</p>
+				</list-item>
+				<list-item hwp:id="list-item-8">
+					<p hwp:id="p-52">
+						<italic toggle="yes">E</italic>
+						is the number of active exposed people (people in incubation);
+					</p>
+				</list-item>
+				<list-item hwp:id="list-item-9">
+					<p hwp:id="p-53">
+						<italic toggle="yes">I</italic>
+						is the number of active infected people;
+					</p>
+				</list-item>
+				<list-item hwp:id="list-item-10">
+					<p hwp:id="p-54">
+						<italic toggle="yes">R</italic>
+						is the number of recovered people (no longer infectable).
+					</p>
+				</list-item>
+				<list-item hwp:id="list-item-11">
+					<p hwp:id="p-55">
+						<italic toggle="yes">X</italic>
+						<sub>
+							<italic toggle="yes">n</italic>
+						</sub>
+						is the number of day-n “X-category” people;
+					</p>
+				</list-item>
+				<list-item hwp:id="list-item-12">
+					<p hwp:id="p-56">
+						<italic toggle="yes">X</italic>
+						<sub>
+							<italic toggle="yes">t</italic>
+						</sub>
+						is the number of
+						<xref rid="tbl4" ref-type="table"
+							hwp:id="xref-table-wrap-5-2" hwp:rel-id="T5">table 4</xref>
+						“X-category” people;
+					</p>
+				</list-item>
+			</list>
+			<p hwp:id="p-57">
+				<underline>Significant Test-Collection 1</underline>
+			</p>
+			<p hwp:id="p-58">Assumptions: 1/σ ∈ [3;6] days, 1/γ ∈ 35 days R0 ∈ [3;4]</p>
+			<p hwp:id="p-59">
+				Significant results: I0 ∈ [5;8] · 10
+				<sup>3</sup>
+				≫ I0t = 2202, R14 ∈ [8;9] · 10
+				<sup>3</sup>
+				≫ R14t = 3327.
+			</p>
+		</sec>
+		<sec id="s9" hwp:id="sec-13">
+			<title hwp:id="title-20">Discussion</title>
+			<p hwp:id="p-60">
+				In order for the supposed data to be representative of reality, we
+				should admit the existence of many more cases than expected. All
+				this is consistent both with the idea the infection had been present
+				on the territory for some time, in the form of a less aggressive
+				strain, than with the time course of the disease [
+				<xref ref-type="bibr" rid="c1" hwp:id="xref-ref-1-7"
+					hwp:rel-id="ref-1">1</xref>
+				]. The number of people healed is also in line with international
+				percentages [
+				<xref ref-type="bibr" rid="c16" hwp:id="xref-ref-16-1"
+					hwp:rel-id="ref-16">16</xref>
+				].
+			</p>
+			<p hwp:id="p-61">Validity grade: plausible and supported by empirical
+				evidences. Warning level: high.</p>
+			<p hwp:id="p-62">
+				<underline>Significant Test-Collection 2</underline>
+			</p>
+			<p hwp:id="p-63">Assumptions:1/σ = 3 days, 1/γ = 35 days, R0 = 6.05.</p>
+			<p hwp:id="p-64">
+				Significant results:
+				<italic toggle="yes">I0</italic>
+				=
+				<italic toggle="yes">I0t</italic>
+				= 2202,
+				<italic toggle="yes">R</italic>
+				14 = 7169 ≫
+				<italic toggle="yes">R</italic>
+				14t = 3327.
+			</p>
+			<p hwp:id="p-65">
+				Another possible scenario that describes the
+				<xref rid="tbl4" ref-type="table" hwp:id="xref-table-wrap-5-3"
+					hwp:rel-id="T5">table 4</xref>
+				data. In this case the value of R0 would mean an extremely more
+				aggressive/infective genetic mutation.
+			</p>
+			<p hwp:id="p-66">Validity grade: not excludable, but improbable. Warning
+				level: extremely high.</p>
+			<p hwp:id="p-67">
+				<underline>Significant Test-Collection 3</underline>
+			</p>
+			<p hwp:id="p-68">Assumptions: 1/σ = 3 days, 1/γ = 15 days, R0 = 3.51.</p>
+			<p hwp:id="p-69">
+				Significant results:
+				<italic toggle="yes">I0</italic>
+				= 3350 &gt;
+				<italic toggle="yes">I0t</italic>
+				= 2202,
+				<italic toggle="yes">R</italic>
+				14 = 16219 ≫
+				<italic toggle="yes">R</italic>
+				14t = 3327.
+			</p>
+			<p hwp:id="p-70">
+				Discussion: a third notable possible scenario that describes the
+				<xref rid="tbl4" ref-type="table" hwp:id="xref-table-wrap-5-4"
+					hwp:rel-id="T5">table 4</xref>
+				infections. This latter case fits the estimated theoretical data
+				almost perfectly and ranks first as a representative model.
+			</p>
+			<p hwp:id="p-71">Validity grade: very plausible and supported by empirical
+				evidences.</p>
+			<p hwp:id="p-72">Warning level: high.</p>
+			<sec id="s9a" hwp:id="sec-14">
+				<label>3.1</label>
+				<title hwp:id="title-21">Best Test forecast and graphs: Test 3</title>
+				<p hwp:id="p-73">Since test 3 turned out to be the most likely, we focus
+					on it. Peak-day: 80.</p>
+				<p hwp:id="p-74">
+					Peak value:
+					<italic toggle="yes">Imax</italic>
+					= 8.86694·10^5 people (almost 9 million people);
+				</p>
+				<p hwp:id="p-75">
+					<italic toggle="yes">I</italic>
+					&lt; 10 – day: 333 (almost one year);
+				</p>
+				<p hwp:id="p-76">
+					<italic toggle="yes">I</italic>
+					= 0 – day: 386.
+				</p>
+				<p hwp:id="p-77">We can also fit the curve through a convenient Gaussian
+					f(x)= y0 + Gauss(A,x0,σ) (x) function, useful for modeling the
+					initial trend of the virus.</p>
+			</sec>
+		</sec>
+		<sec id="s10" hwp:id="sec-15">
+			<title hwp:id="title-22">Conclusions</title>
+			<p hwp:id="p-78">The model is approximate as a direct consequence of the
+				uncertainty of the data it was supposed to fit but it can act as a
+				valid comparison for the identification of any Sars-Cov-2 genetic
+				mutations as well as for the evaluation of the containment measures
+				effectiveness. Observed the comparison between the predictions of
+				the S.E.I.R. and the actual trends highlighted above, as well as
+				between the trends of Lombardy and the other Italian regions, there
+				are valid reasons to assert that in Lombardy, in particular in the
+				cities of Brescia, Bergamo and Milan, a very significant
+				evolutionary mutation of the virus is taking place, which requires
+				immediate containment.</p>
+		</sec>
+	</body>
+	<back>
+		<sec sec-type="data-availability" hwp:id="sec-16">
+			<title hwp:id="title-23">Data Availability</title>
+			<p hwp:id="p-79">The authors confirm that the data supporting the findings
+				of this study are available within the article [and/or] its
+				supplementary materials.</p>
+		</sec>
+		<ack hwp:id="ack-1">
+			<title hwp:id="title-24">Acknowledgment</title>
+			<p hwp:id="p-80">None.</p>
+		</ack>
+		<sec id="s11" hwp:id="sec-17">
+			<title hwp:id="title-25">Authors contribution</title>
+			<p hwp:id="p-81">AR and ASB designed the study, collected the data,
+				analyzed the data, prepared the manuscript. All the author read and
+				approved the final manuscript.</p>
+		</sec>
+		<sec id="s12" hwp:id="sec-18">
+			<title hwp:id="title-26">Funding</title>
+			<p hwp:id="p-82">No source of funding</p>
+		</sec>
+		<sec id="s13" hwp:id="sec-19">
+			<title hwp:id="title-27">Available data and materials</title>
+			<p hwp:id="p-83">All the materials are attached as supplementary and
+				information related to the study are in the manuscript.</p>
+		</sec>
+		<sec id="s14" hwp:id="sec-20">
+			<title hwp:id="title-28">Consent for publication</title>
+			<p hwp:id="p-84">Not applicable.</p>
+		</sec>
+		<sec id="s15" hwp:id="sec-21">
+			<title hwp:id="title-29">Competing interests</title>
+			<p hwp:id="p-85">The authors declare that they have no competing
+				interests.</p>
+		</sec>
+		<ref-list hwp:id="ref-list-1">
+			<title hwp:id="title-30">References</title>
+			<ref id="c1" hwp:id="ref-1"
+				hwp:rev-id="xref-ref-1-1 xref-ref-1-2 xref-ref-1-3 xref-ref-1-4 xref-ref-1-5 xref-ref-1-6 xref-ref-1-7">
+				<label>[1]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.1" ref:linkable="yes"
+					ref:use-reference-as-is="yes" hwp:id="citation-1">
+					<string-name name-style="western"
+						hwp:sortable="Lai Alessia">
+						<given-names>Alessia</given-names>
+						<surname>Lai</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Bergna Annalisa">
+						<given-names>Annalisa</given-names>
+						<surname>Bergna</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Acciarri Carla">
+						<given-names>Carla</given-names>
+						<surname>Acciarri</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Galli Massimo">
+						<given-names>Massimo</given-names>
+						<surname>Galli</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Zehender Gianguglielmo">
+						<given-names>Gianguglielmo</given-names>
+						<surname>Zehender</surname>
+					</string-name>
+					,
+					<source hwp:id="source-1">Early Phylogenetic Estimate Of The Effective
+						Reproduction Number Of 2019-nCoV</source>
+					,
+					<month>February</month>
+					<volume>23</volume>
+					,
+					<year>2020</year>
+					. DOI:
+					<pub-id pub-id-type="doi">10.1101/2020.02.19.20024851</pub-id>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.medrxiv.org/content/10.1101/2020.02.19.20024851v1"
+						ext-link-type="uri"
+						xlink:href="https://www.medrxiv.org/content/10.1101/2020.02.19.20024851v1"
+						hwp:id="ext-link-2">https://www.medrxiv.org/content/10.1101/2020.02.19.20024851v1</ext-link>
+				</citation>
+			</ref>
+			<ref id="c2" hwp:id="ref-2" hwp:rev-id="xref-ref-2-1">
+				<label>[2]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.2" ref:linkable="no"
+					ref:use-reference-as-is="yes" hwp:id="citation-2">
+					<collab hwp:id="collab-1">Centers for Disease Control and Prevention</collab>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.cdc.gov/coronavirus/2019-ncov/hcp/faq.html"
+						ext-link-type="uri"
+						xlink:href="https://www.cdc.gov/coronavirus/2019-ncov/hcp/faq.html"
+						hwp:id="ext-link-3">https://www.cdc.gov/coronavirus/2019-ncov/hcp/faq.html</ext-link>
+				</citation>
+			</ref>
+			<ref id="c3" hwp:id="ref-3"
+				hwp:rev-id="xref-ref-3-1 xref-ref-3-2">
+				<label>[3]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.3" ref:linkable="no"
+					ref:use-reference-as-is="yes" hwp:id="citation-3">
+					<string-name name-style="western"
+						hwp:sortable="Riou Julien">
+						<given-names>Julien</given-names>
+						<surname>Riou</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Hauser Anthony">
+						<given-names>Anthony</given-names>
+						<surname>Hauser</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Counotte Michel J">
+						<given-names>Michel J</given-names>
+						<surname>Counotte</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Althaus Christian L">
+						<given-names>Christian L</given-names>
+						<surname>Althaus</surname>
+					</string-name>
+					,
+					<source hwp:id="source-2">Adjusted age-specific casefatality ratio
+						during the COVID-19 epidemic in Hubei, China</source>
+					,
+					<month>January</month>
+					and February
+					<year>2020</year>
+					, p.
+					<fpage>5</fpage>
+					. DOI:
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://doi.org/10.1101/2020.03.04.20031104"
+						ext-link-type="uri"
+						xlink:href="https://doi.org/10.1101/2020.03.04.20031104"
+						hwp:id="ext-link-4">https://doi.org/10.1101/2020.03.04.20031104</ext-link>
+					.
+				</citation>
+			</ref>
+			<ref id="c4" hwp:id="ref-4" hwp:rev-id="xref-ref-4-1">
+				<label>[4]</label>
+				<citation publication-type="journal"
+					citation-type="journal" ref:id="2020.03.19.20038968v1.4"
+					ref:linkable="no" ref:use-reference-as-is="yes" hwp:id="citation-4">
+					<string-name name-style="western"
+						hwp:sortable="Muniz-Rodriguez Kamalich">
+						<given-names>Kamalich</given-names>
+						<surname>Muniz-Rodriguez</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Fung Isaac Chun-Hai">
+						<given-names>Isaac Chun-Hai</given-names>
+						<surname>Fung</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Ferdosi Shayesteh R.">
+						<given-names>Shayesteh R.</given-names>
+						<surname>Ferdosi</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Ofori Sylvia K.">
+						<given-names>Sylvia K.</given-names>
+						<surname>Ofori</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Lee Yiseul">
+						<given-names>Yiseul</given-names>
+						<surname>Lee</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Tariq Amna">
+						<given-names>Amna</given-names>
+						<surname>Tariq</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Chowell Gerardo">
+						<given-names>Gerardo</given-names>
+						<surname>Chowell</surname>
+					</string-name>
+					,
+					<source hwp:id="source-3">Transmission potential of COVID-19 in Iran,
+						March</source>
+					<year>2020</year>
+					,
+					<volume>10</volume>
+					, Abstract. DOI:
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://doi.org/10.1101/2020.03.08.20030643"
+						ext-link-type="uri"
+						xlink:href="https://doi.org/10.1101/2020.03.08.20030643"
+						hwp:id="ext-link-5">https://doi.org/10.1101/2020.03.08.20030643</ext-link>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.medrxiv.org/content/medrxiv/early/2020/03/10/2020.03.08.20030643.full.pdf?%253fcollection="
+						ext-link-type="uri"
+						xlink:href="https://www.medrxiv.org/content/medrxiv/early/2020/03/10/2020.03.08.20030643.full.pdf?%253fcollection="
+						hwp:id="ext-link-6">https://www.medrxiv.org/content/medrxiv/early/2020/03/10/2020.03.08.20030643.full.pdf?%253fcollection=</ext-link>
+				</citation>
+			</ref>
+			<ref id="c5" hwp:id="ref-5"
+				hwp:rev-id="xref-ref-5-1 xref-ref-5-2">
+				<label>[5]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.5" ref:linkable="yes"
+					ref:use-reference-as-is="yes" hwp:id="citation-5">
+					<string-name name-style="western"
+						hwp:sortable="Lan Lan">
+						<given-names>Lan</given-names>
+						<surname>Lan</surname>
+					</string-name>
+					,
+					<string-name name-style="western" hwp:sortable="Xu Dan">
+						<given-names>Dan</given-names>
+						<surname>Xu</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Ye Guangming">
+						<given-names>Guangming</given-names>
+						<surname>Ye</surname>
+					</string-name>
+					,
+					<article-title hwp:id="article-title-2">Positive RT-PCR Test Results in
+						Patients Recovered From COVID-19</article-title>
+					,
+					<month>February</month>
+					<volume>27</volume>
+					,
+					<year>2020</year>
+					. DOI:
+					<pub-id pub-id-type="doi">10.1001/jama.2020.2783</pub-id>
+					,
+					<source hwp:id="source-4">JAMA</source>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://jamanetwork.com/journals/jama/fullarticle/2762452"
+						ext-link-type="uri"
+						xlink:href="https://jamanetwork.com/journals/jama/fullarticle/2762452"
+						hwp:id="ext-link-7">https://jamanetwork.com/journals/jama/fullarticle/2762452</ext-link>
+				</citation>
+			</ref>
+			<ref id="c6" hwp:id="ref-6" hwp:rev-id="xref-ref-6-1">
+				<label>[6]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.6" ref:linkable="no"
+					ref:use-reference-as-is="yes" hwp:id="citation-6">
+					<string-name name-style="western"
+						hwp:sortable="Bartoloni Nicola Barone e Marzio">
+						<given-names>Nicola Barone e Marzio</given-names>
+						<surname>Bartoloni</surname>
+					</string-name>
+					,
+					<source hwp:id="source-5">ilsole24ore, La giravolta comunicativa sul
+						coronavirus, menotamponi e contare solo i casi gravi</source>
+					,
+					<month>February</month>
+					<year>2020</year>
+					,
+					<volume>27</volume>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.ilsole24ore.com/art/la-giravolta-comunicativa-coronavirus-meno-tamponi-e-contare-solo-casi-gravi-ACQYXQMB"
+						ext-link-type="uri"
+						xlink:href="https://www.ilsole24ore.com/art/la-giravolta-comunicativa-coronavirus-meno-tamponi-e-contare-solo-casi-gravi-ACQYXQMB"
+						hwp:id="ext-link-8">https://www.ilsole24ore.com/art/la-giravolta-comunicativa-coronavirus-meno-tamponi-e-contare-solo-casi-gravi-ACQYXQMB</ext-link>
+				</citation>
+			</ref>
+			<ref id="c7" hwp:id="ref-7" hwp:rev-id="xref-ref-7-1">
+				<label>[7]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.7" ref:linkable="no"
+					ref:use-reference-as-is="yes" hwp:id="citation-7">
+					<collab hwp:id="collab-2">Novel coronavirus disease</collab>
+					<year>2019</year>
+					<source hwp:id="source-6">(COVID-19) pandemic: increased transmission
+						in the EU/EEA and the UK - sixth update</source>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.ecdc.europa.eu/sites/default/files/documents/RRA-sixth-update-Outbreak-of-novel-coronavirus-disease-2019-COVID-19.pdf"
+						ext-link-type="uri"
+						xlink:href="https://www.ecdc.europa.eu/sites/default/files/documents/RRA-sixth-update-Outbreak-of-novel-coronavirus-disease-2019-COVID-19.pdf"
+						hwp:id="ext-link-9">https://www.ecdc.europa.eu/sites/default/files/documents/RRA-sixth-update-Outbreak-of-novel-coronavirus-disease-2019-COVID-19.pdf</ext-link>
+				</citation>
+			</ref>
+			<ref id="c8" hwp:id="ref-8"
+				hwp:rev-id="xref-ref-8-1 xref-ref-8-2 xref-ref-8-3 xref-ref-8-4 xref-ref-8-5 xref-ref-8-6">
+				<label>[8]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.8" ref:linkable="no"
+					ref:use-reference-as-is="yes" hwp:id="citation-8">
+					<collab hwp:id="collab-3">Rovetta Alessandro</collab>
+					,
+					<source hwp:id="source-7">Mathematical-statistical modeling of COVID-19
+						on the restricted population, February 2020, 29, p.2 and p.3 f.
+						2.1.2. Mensana srls research and disclosure division, Via Moro
+						Aldo 5 - 25124 Brescia, Italy</source>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.researchgate.net/publication/339566420_Mathematical-statistical_modeling_of_COVID-19_on_the_restricted_population"
+						ext-link-type="uri"
+						xlink:href="https://www.researchgate.net/publication/339566420_Mathematical-statistical_modeling_of_COVID-19_on_the_restricted_population"
+						hwp:id="ext-link-10">https://www.researchgate.net/publication/339566420_Mathematical-statistical_modeling_of_COVID-19_on_the_restricted_population</ext-link>
+				</citation>
+			</ref>
+			<ref id="c9" hwp:id="ref-9" hwp:rev-id="xref-ref-9-1">
+				<label>[9]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.9" ref:linkable="no"
+					ref:use-reference-as-is="yes" hwp:id="citation-9">
+					<collab hwp:id="collab-4">WHO database</collab>
+					,
+					<source hwp:id="source-8">Global research on coronavirus disease
+						(COVID-19)</source>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov"
+						ext-link-type="uri"
+						xlink:href="https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov"
+						hwp:id="ext-link-11">https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov</ext-link>
+				</citation>
+			</ref>
+			<ref id="c10" hwp:id="ref-10" hwp:rev-id="xref-ref-10-1">
+				<label>[10]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.10" ref:linkable="yes"
+					ref:use-reference-as-is="yes" hwp:id="citation-10">
+					<string-name name-style="western"
+						hwp:sortable="Cao Zhidong">
+						<given-names>Zhidong</given-names>
+						<surname>Cao</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Zhang Qingpeng">
+						<given-names>Qingpeng</given-names>
+						<surname>Zhang</surname>
+					</string-name>
+					,
+					<string-name name-style="western" hwp:sortable="Lu Xin">
+						<given-names>Xin</given-names>
+						<surname>Lu</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Dirk Pfei#er">
+						<surname>Dirk</surname>
+						<given-names>Pfei#er</given-names>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Jia Zhongwei">
+						<given-names>Zhongwei</given-names>
+						<surname>Jia</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Song Hongbing">
+						<given-names>Hongbing</given-names>
+						<surname>Song</surname>
+					</string-name>
+					,
+					<string-name name-style="western"
+						hwp:sortable="Zeng Daniel Dajun">
+						<given-names>Daniel Dajun</given-names>
+						<surname>Zeng</surname>
+					</string-name>
+					,
+					<source hwp:id="source-9">Estimating the effective reproduction number
+						of the 2019-nCoV in China January</source>
+					<volume>29</volume>
+					,
+					<year>2020</year>
+					. DOI:
+					<pub-id pub-id-type="doi">10.1101/2020.01.27.20018952</pub-id>
+					.
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.medrxiv.org/content/10.1101/2020.01.27.20018952v1"
+						ext-link-type="uri"
+						xlink:href="https://www.medrxiv.org/content/10.1101/2020.01.27.20018952v1"
+						hwp:id="ext-link-12">https://www.medrxiv.org/content/10.1101/2020.01.27.20018952v1</ext-link>
+				</citation>
+			</ref>
+			<ref id="c11" hwp:id="ref-11">
+				<label>[11]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.11" ref:linkable="no"
+					ref:use-reference-as-is="yes" ref:citation-has-metadata="no"
+					hwp:id="citation-11">
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.aljazeera.com/news/2020/01/timeline-china-coronavirus-spread-200126061554884.html"
+						ext-link-type="uri"
+						xlink:href="https://www.aljazeera.com/news/2020/01/timeline-china-coronavirus-spread-200126061554884.html"
+						hwp:id="ext-link-13">https://www.aljazeera.com/news/2020/01/timeline-china-coronavirus-spread-200126061554884.html</ext-link>
+				</citation>
+			</ref>
+			<ref id="c12" hwp:id="ref-12" hwp:rev-id="xref-ref-12-1">
+				<label>[12]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.12" ref:linkable="no"
+					ref:use-reference-as-is="yes" ref:citation-has-metadata="no"
+					hwp:id="citation-12">
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.newscientist.com/article/2236544-coronavirus-are-there-two-strains-and-is-one-more-deadly/"
+						ext-link-type="uri"
+						xlink:href="https://www.newscientist.com/article/2236544-coronavirus-are-there-two-strains-and-is-one-more-deadly/"
+						hwp:id="ext-link-14">https://www.newscientist.com/article/2236544-coronavirus-are-there-two-strains-and-is-one-more-deadly/</ext-link>
+				</citation>
+			</ref>
+			<ref id="c13" hwp:id="ref-13" hwp:rev-id="xref-ref-13-1">
+				<label>[13]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.13" ref:linkable="no"
+					ref:use-reference-as-is="yes" ref:citation-has-metadata="no"
+					hwp:id="citation-13">
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://nextstrain.org/ncov" ext-link-type="uri"
+						xlink:href="https://nextstrain.org/ncov" hwp:id="ext-link-15">https://nextstrain.org/ncov</ext-link>
+				</citation>
+			</ref>
+			<ref id="c14" hwp:id="ref-14"
+				hwp:rev-id="xref-ref-14-1 xref-ref-14-2">
+				<label>[14]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.14" ref:linkable="no"
+					ref:use-reference-as-is="yes" ref:citation-has-metadata="no"
+					hwp:id="citation-14">
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="http://www.salute.gov.it/portale/news/p3_2_1_1.jsplingua=italiano&amp;menu=notizie&amp;p=dalministero&amp;dataa=2020/12/31&amp;datada=2017/01/01"
+						ext-link-type="uri"
+						xlink:href="http://www.salute.gov.it/portale/news/p3_2_1_1.jsplingua=italiano&amp;menu=notizie&amp;p=dalministero&amp;dataa=2020/12/31&amp;datada=2017/01/01"
+						hwp:id="ext-link-16">http://www.salute.gov.it/portale/news/p3_2_1_1.jsplingua=italiano&amp;menu=notizie&amp;p=dalministero&amp;dataa=2020/12/31&amp;datada=2017/01/01</ext-link>
+				</citation>
+			</ref>
+			<ref id="c15" hwp:id="ref-15" hwp:rev-id="xref-ref-15-1">
+				<label>[15]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.15" ref:linkable="no"
+					ref:use-reference-as-is="yes" ref:citation-has-metadata="no"
+					hwp:id="citation-15">
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.tuttitalia.it/statistiche/popolazione-eta-sesso-stato-civile-2019/"
+						ext-link-type="uri"
+						xlink:href="https://www.tuttitalia.it/statistiche/popolazione-eta-sesso-stato-civile-2019/"
+						hwp:id="ext-link-17">https://www.tuttitalia.it/statistiche/popolazione-eta-sesso-stato-civile-2019/</ext-link>
+				</citation>
+			</ref>
+			<ref id="c16" hwp:id="ref-16" hwp:rev-id="xref-ref-16-1">
+				<label>[16]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.16" ref:linkable="no"
+					ref:use-reference-as-is="yes" ref:citation-has-metadata="no"
+					hwp:id="citation-16">
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.worldometers.info/coronavirus/"
+						ext-link-type="uri"
+						xlink:href="https://www.worldometers.info/coronavirus/"
+						hwp:id="ext-link-18">https://www.worldometers.info/coronavirus/</ext-link>
+				</citation>
+			</ref>
+			<ref id="c17" hwp:id="ref-17" hwp:rev-id="xref-ref-17-1">
+				<label>[17]</label>
+				<citation publication-type="website" citation-type="web"
+					ref:id="2020.03.19.20038968v1.17" ref:linkable="no"
+					ref:use-reference-as-is="yes" ref:citation-has-metadata="no"
+					hwp:id="citation-17">
+					<ext-link l:rel="related" l:ref-type="uri"
+						l:ref="https://www.worldometers.info/coronavirus/coronavirus-age-sex-demographics/"
+						ext-link-type="uri"
+						xlink:href="https://www.worldometers.info/coronavirus/coronavirus-age-sex-demographics/"
+						hwp:id="ext-link-19">https://www.worldometers.info/coronavirus/coronavirus-age-sex-demographics/</ext-link>
+				</citation>
+			</ref>
+		</ref-list>
+	</back>
+</article>

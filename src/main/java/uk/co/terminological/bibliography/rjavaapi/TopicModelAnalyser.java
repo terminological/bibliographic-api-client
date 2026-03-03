@@ -1,20 +1,24 @@
 package uk.co.terminological.bibliography.rjavaapi;
 
+import static uk.co.terminological.rjava.RConverter.dataframeCollector;
+
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.datatypes.FluentMap;
-import uk.co.terminological.jsr223.RClass;
-import uk.co.terminological.jsr223.RMethod;
-import uk.co.terminological.jsr223.ROutput;
-import uk.co.terminological.jsr223.ROutput.Dataframe;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
 import uk.co.terminological.nlptools.Filter;
 import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.nlptools.TopicModelResult;
+import uk.co.terminological.rjava.RClass;
+import uk.co.terminological.rjava.RMethod;
+import uk.co.terminological.rjava.types.RCharacterVector;
+import uk.co.terminological.rjava.types.RDataframe;
+
 
 @RClass
 public class TopicModelAnalyser {
@@ -24,10 +28,10 @@ public class TopicModelAnalyser {
 	List<String> textStopwords;
 	
 	@RMethod
-	public TopicModelAnalyser(Repository repo, List<String> stopwords) {
+	public TopicModelAnalyser(Repository repo, RCharacterVector stopwords) {
 		this.repo = repo;
-		this.textStopwords = stopwords;
-		recalculate();
+		this.textStopwords = stopwords.get().collect(Collectors.toList());
+		recalculate(10,0.10,0.1);
 	}
 	
 	@RMethod
@@ -45,13 +49,13 @@ public class TopicModelAnalyser {
 	}
 	
 	@RMethod
-	public TopicModelAnalyser setStopwords(List<String> stopwords) {
-		this.textStopwords = stopwords;
+	public TopicModelAnalyser setStopwords(RCharacterVector stopwords) {
+		this.textStopwords = stopwords.get().collect(Collectors.toList());
 		return this;
 	}
 	
 	@RMethod
-	public TopicModelAnalyser recalculate() {
+	public TopicModelAnalyser recalculate(int topics, double alpha, double beta) {
 		// Kryo kryo = new Kryo();
 	    // kryo.register(TopicModelResult.class);
 		result = null;
@@ -73,20 +77,20 @@ public class TopicModelAnalyser {
 			//doc.addMetadata("community",next);
 			//doc.addMetadata("articleCommunity",artComm);
 			
-			r.getIdentifier(IdType.DOI).ifPresent(d -> doc.addMetadata("doi",d));
+			r.getIdentifier(IdType.DOI).ifPresent(d -> doc.addMetadata(Cols.DOI,d));
 			r.getIdentifier(IdType.PMCID).ifPresent(d -> doc.addMetadata(Cols.PMC,d));
-			r.getIdentifier(IdType.PMID).ifPresent(d -> doc.addMetadata("doi",d));
+			r.getIdentifier(IdType.PMID).ifPresent(d -> doc.addMetadata(Cols.PMID,d));
 			
 			
 		});
 		
 
-		result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
+		result = TopicModelBuilder.create(texts).withTopics(topics).execute(alpha,beta);
 		return this;
 	}
 	
 	@RMethod
-	public Dataframe getTopicsForDocuments() {
+	public RDataframe getTopicsForDocuments() {
 		return this.result.getTopicsForDocuments().flatMap(t -> {
 			return t.streamDocuments().map(wd -> {
 				return FluentMap.create(String.class, Object.class)
@@ -94,7 +98,7 @@ public class TopicModelAnalyser {
 					.and(Cols.UUID, wd.getTarget().getIdentifier())
 					.and(Cols.SCORE,wd.getWeight());
 			});
-		}).collect(ROutput.mapsToDataframe());
+		}).collect(dataframeCollector());
 				
 	}
 	

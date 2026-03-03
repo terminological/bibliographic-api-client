@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,7 +16,6 @@ import uk.co.terminological.bibliography.record.PrintReference;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.datatypes.StreamExceptions;
-import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
 
 public class CrossRefReference extends ExtensibleJson implements RecordReference, PrintReference, Record {
 	

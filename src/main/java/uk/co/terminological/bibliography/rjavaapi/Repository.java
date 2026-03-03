@@ -1,7 +1,8 @@
 package uk.co.terminological.bibliography.rjavaapi;
 
-import static uk.co.terminological.jsr223.ROutput.mapping;
-import static uk.co.terminological.jsr223.ROutput.toDataframe;
+
+import static uk.co.terminological.rjava.RConverter.mapping;
+import static uk.co.terminological.rjava.RConverter.dataframeCollector;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,11 +10,9 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -38,10 +37,12 @@ import uk.co.terminological.bibliography.record.RecordWithCitations;
 import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.datatypes.FluentSet;
 import uk.co.terminological.datatypes.Tuple;
-import uk.co.terminological.jsr223.RClass;
-import uk.co.terminological.jsr223.RInput;
-import uk.co.terminological.jsr223.RMethod;
-import uk.co.terminological.jsr223.ROutput.Dataframe;
+import uk.co.terminological.rjava.RClass;
+import uk.co.terminological.rjava.RMethod;
+import uk.co.terminological.rjava.types.RCharacterVector;
+import uk.co.terminological.rjava.types.RDataframe;
+import uk.co.terminological.rjava.types.RNamedList;
+
 
 /**
  * noramlise DOI 
@@ -115,8 +116,10 @@ public class Repository implements Serializable {
 		ImmutableRecordReference source = citationLink.getSource().getIdentifier().map(Builder::recordReference).get();
 		ImmutableRecordReference target = citationLink.getTarget().getIdentifier().map(Builder::recordReference).get();
 		add(source);
-		add(target);
-		citations.addEdge(source, target);
+		if (!target.equals(source)) {
+			add(target);
+			citations.addEdge(source, target);
+		}
 	}
 	
 	protected UUID merge(Collection<ImmutableRecordReference> ri) {
@@ -217,7 +220,7 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public TopicModelAnalyser topicModeller(List<String> stopwords) {
+	public TopicModelAnalyser topicModeller(RCharacterVector stopwords) {
 		return new TopicModelAnalyser(this,stopwords);
 	}
 	
@@ -233,22 +236,22 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public Dataframe getUuidCitations() {
+	public RDataframe getUuidCitations() {
 		return uuidCitations()
 			.collect(
-				toDataframe(
-					mapping(Tuple.class,Cols.SOURCE_UUID, s-> s.getFirst()),
-					mapping(Tuple.class,Cols.TARGET_UUID, s-> s.getSecond())
+				dataframeCollector(
+					mapping(Tuple.class,Cols.SOURCE_UUID, s-> s.getFirst().toString()),
+					mapping(Tuple.class,Cols.TARGET_UUID, s-> s.getSecond().toString())
 				)
 			);
 	}
 	
 	@RMethod
-	public Dataframe getRecords() {
+	public RDataframe getRecords() {
 		return 
 			records.entrySet().stream()
-			.collect(toDataframe(
-					mapping(Entry.class,Cols.UUID, s-> s.getKey()),
+			.collect(dataframeCollector(
+					mapping(Entry.class,Cols.UUID, s-> s.getKey().toString()),
 					mapping(Entry.class,Cols.TITLE, s-> ((Record) s.getValue()).getTitle().orElse(null)),
 					mapping(Entry.class,Cols.ABSTRACT, s-> ((Record) s.getValue()).getAbstract().orElse(null)),
 					mapping(Entry.class,Cols.CITATION, s-> ((Record) s.getValue()).render(api.citationStyle).orElse(null)),
@@ -257,25 +260,25 @@ public class Repository implements Serializable {
 					mapping(Entry.class,Cols.PMC, s-> ((Record) s.getValue()).getIdentifier(IdType.PMCID).orElse(null)),
 					mapping(Entry.class,Cols.ID, s -> ((Record) s.getValue()).getIdentifier().orElse(null)),
 					mapping(Entry.class,Cols.ID_TYPE, s -> ((Record) s.getValue()).getIdentifierType().toString()),
-					mapping(Entry.class,Cols.URL, s -> ((Record) s.getValue()).getPdfUri().orElse(null)),
+					mapping(Entry.class,Cols.URL, s -> ((Record) s.getValue()).getPdfUri().map(o -> o.toString()).orElse(null)),
 					mapping(Entry.class,Cols.DATE, s -> ((Record) s.getValue()).getDate().orElse(null))
 					));
 	}
 	
 	@RMethod
-	public Dataframe getCitations() {
+	public RDataframe getCitations() {
 		return 
 			citations
 			.edgeSet().stream()
 			.map(e -> Tuple.create(citations.getEdgeSource(e), citations.getEdgeTarget(e)))
-			.collect(toDataframe(
+			.collect(dataframeCollector(
 					mapping(Tuple.class, Cols.SOURCE_ID, t -> ((ImmutableRecordReference) t.getFirst()).getIdentifier().orElse(null)),
 					mapping(Tuple.class, Cols.SOURCE_ID_TYPE, t -> ((ImmutableRecordReference) t.getFirst()).getIdentifierType().toString()),
-					mapping(Tuple.class, Cols.SOURCE_UUID, t -> ids.getOpt(((ImmutableRecordReference) t.getFirst())).orElse(null)),
+					mapping(Tuple.class, Cols.SOURCE_UUID, t -> ids.getOpt(((ImmutableRecordReference) t.getFirst())).map(o -> o.toString()).orElse(null)),
 					mapping(Tuple.class, Cols.SOURCE_TITLE, t -> ids.getOpt(((ImmutableRecordReference) t.getFirst())).flatMap(u -> records.getOpt(u)).flatMap(r -> r.getTitle()).orElse(null)),
 					mapping(Tuple.class, Cols.TARGET_ID, t -> ((ImmutableRecordReference) t.getSecond()).getIdentifier().orElse(null)),
 					mapping(Tuple.class, Cols.TARGET_ID_TYPE, t -> ((ImmutableRecordReference) t.getSecond()).getIdentifierType().toString()),
-					mapping(Tuple.class, Cols.TARGET_UUID, t -> ids.getOpt(((ImmutableRecordReference) t.getSecond())).orElse(null)),
+					mapping(Tuple.class, Cols.TARGET_UUID, t -> ids.getOpt(((ImmutableRecordReference) t.getSecond())).map(o -> o.toString()).orElse(null)),
 					mapping(Tuple.class, Cols.TARGET_TITLE, t -> ids.getOpt(((ImmutableRecordReference) t.getSecond())).flatMap(u -> records.getOpt(u)).flatMap(r -> r.getTitle()).orElse(null))
 			));
 //			.map(e -> {
@@ -293,12 +296,12 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public Dataframe getIdMapping() {
+	public RDataframe getIdMapping() {
 		return ids.entrySet().stream()
-				.collect(toDataframe(
+				.collect(dataframeCollector(
 						mapping(Entry.class,Cols.ID, s-> ((ImmutableRecordReference) s.getKey()).getIdentifier().get()),
 						mapping(Entry.class,Cols.ID_TYPE, s-> ((ImmutableRecordReference) s.getKey()).getIdentifierType()),
-						mapping(Entry.class,Cols.UUID, s-> s.getValue())
+						mapping(Entry.class,Cols.UUID, s-> s.getValue().toString())
 						));
 	}
 	
@@ -316,7 +319,7 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public Repository collectSearchByApi(Map<String,String> searchByApi) {
+	public Repository collectSearchByApi(RNamedList searchByApi) {
 		Collection<? extends Record> hits = api.multiSearch(searchByApi);
 		hits.forEach(this::add);
 		hits.stream()
@@ -335,7 +338,7 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public Repository fetchRecords(List<Map<String,Object>> recordDf) {
+	public Repository fetchRecords(RDataframe recordDf) {
 		Set<ImmutableRecordReference> ids = ApiClient.idsFromDataframe(recordDf);
 		api.fetch(ids).values().forEach(this::add);
 		return this;
@@ -368,7 +371,7 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public Repository expandDown(List<Map<String,Object>> recordDf, int limit) {
+	public Repository expandDown(RDataframe recordDf, int limit) {
 		Set<ImmutableRecordReference> toExpand = ApiClient.idsFromDataframe(recordDf);
 		toExpand.removeAll(expandedDown);
 		if (toExpand.size() > limit) {
@@ -381,7 +384,7 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public Repository expandUp(List<Map<String,Object>> recordDf, int limit) {
+	public Repository expandUp(RDataframe recordDf, int limit) {
 		Set<ImmutableRecordReference> toExpand = ApiClient.idsFromDataframe(recordDf);
 		toExpand.removeAll(expandedUp);
 		if (toExpand.size() > limit) {
@@ -394,7 +397,7 @@ public class Repository implements Serializable {
 	}
 	
 	@RMethod
-	public Repository removeRecords(List<Map<String,Object>> recordDf) {
+	public Repository removeRecords(RDataframe recordDf) {
 		ApiClient.idsFromDataframe(recordDf).forEach(this::remove);
 		return this;
 	}
@@ -439,7 +442,6 @@ public class Repository implements Serializable {
 	    return this;
 	}
 
-	@RMethod
 	public Repository addSingle(IdType idType, String id) {
 		api.fetch(List.of(Builder.recordReference(idType, id))).values().forEach(this::add);
 		return this;

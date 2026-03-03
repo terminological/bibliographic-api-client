@@ -58,6 +58,7 @@ public class CrossRefWork extends ExtensibleJson implements PrintReference, Reco
 	public List<CrossRefContributor> getAuthors() {
 		return this.streamPath(CrossRefContributor.class, "author").collect(Collectors.toList());}
 	public Stream<CrossRefReference> getReferences() {return this.streamPath(CrossRefReference.class, "reference");}
+	
 	public Stream<CitationLink> getCitations() {
 		List<CitationLink> tmp = new ArrayList<>();
 		Integer i = 1;
@@ -72,6 +73,7 @@ public class CrossRefWork extends ExtensibleJson implements PrintReference, Reco
 		}
 		return tmp.stream();
 	}
+	
 	public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 	public Optional<Long> getReferencesCount() {return this.asLong("references-count");}
 	public Optional<String> getAbstract() {return this.asString("abstract");}

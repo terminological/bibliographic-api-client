@@ -17,6 +17,12 @@ public class ImmutableCitationReference implements CitationReference, Serializab
 		this.print = Builder.printReference(crossRefWork2);
 	}
 
+	public ImmutableCitationReference(Record crossRefWork) {
+		this.identifier = Builder.recordReference(crossRefWork);
+		this.title = crossRefWork.getTitle().orElse(null);
+		this.print = null;
+	}
+	
 	ImmutableRecordReference identifier;
 	String title;
 	ImmutablePrintReference print;

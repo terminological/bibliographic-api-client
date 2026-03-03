@@ -1,7 +1,9 @@
 package uk.co.terminological.bibliography.rjavaapi;
 
-import static uk.co.terminological.jsr223.ROutput.mapping;
-import static uk.co.terminological.jsr223.ROutput.toDataframe;
+
+
+import static uk.co.terminological.rjava.RConverter.mapping;
+import static uk.co.terminological.rjava.RConverter.dataframeCollector;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,9 +22,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,11 +48,15 @@ import uk.co.terminological.bibliography.record.MergedRecord;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.bibliography.record.RecordReferenceMapping;
-import uk.co.terminological.datatypes.FluentMap;
-import uk.co.terminological.jsr223.RClass;
-import uk.co.terminological.jsr223.RInput;
-import uk.co.terminological.jsr223.RMethod;
-import uk.co.terminological.jsr223.ROutput.Dataframe;
+import uk.co.terminological.rjava.RClass;
+import uk.co.terminological.rjava.RConverter;
+import uk.co.terminological.rjava.RMethod;
+import uk.co.terminological.rjava.UnconvertableTypeException;
+import uk.co.terminological.rjava.types.RCharacterVector;
+import uk.co.terminological.rjava.types.RDataframe;
+import uk.co.terminological.rjava.types.RList;
+import uk.co.terminological.rjava.types.RNamedList;
+import uk.co.terminological.rjava.types.RVector;
 
 
 
@@ -102,20 +108,24 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 	
 	BibliographicApis api;
 	String citationStyle = null;
-	List<String> searchApis = getSupportedApis().get("search");
-	List<String> citesApis = getSupportedApis().get("cites");
-	List<String> citedByApis = getSupportedApis().get("citedBy");
-	List<String> fetchApis = getSupportedApis().get("fetch");
-	List<String> idMapApis = getSupportedApis().get("mapIds");
+	List<String> searchApis = getSupportedApis().asStringVector("search").collect(Collectors.toList());
+	List<String> citesApis = getSupportedApis().asStringVector("cites").collect(Collectors.toList());
+	List<String> citedByApis = getSupportedApis().asStringVector("citedBy").collect(Collectors.toList());
+	List<String> fetchApis = getSupportedApis().asStringVector("fetch").collect(Collectors.toList());
+	List<String> idMapApis = getSupportedApis().asStringVector("mapIds").collect(Collectors.toList());
 	
 	@RMethod
-	public static Map<String,List<String>> getSupportedApis() {
-		return FluentMap
-			.with("search", List.of("crossref","entrez","europepmc"))
-			.and("cites", List.of("crossref","entrez","europepmc","opencitations"))
-			.and("citedBy", List.of("opencitations","entrez","europepmc"))
-			.and("fetch", List.of("crossref","entrez","europepmc","unpaywall"))
-			.and("idMap", List.of("pmcid"));
+	public static RNamedList getSupportedApis() {
+		try {
+			return RNamedList
+				.with("search", RVector.with("crossref","entrez","europepmc"))
+				.and("cites", RVector.with("crossref","entrez","europepmc","opencitations"))
+				.and("citedBy", RVector.with("opencitations","entrez","europepmc"))
+				.and("fetch", RVector.with("crossref","entrez","europepmc","unpaywall"))
+				.and("idMap", RVector.with("pmcid"));
+		} catch (UnconvertableTypeException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	Optional<LocalDate> from = Optional.empty();  
@@ -127,8 +137,8 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 	
 	public Collection<Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to,
 			Optional<Integer> limit) {
-		Map<String,String> multiSearch = FluentMap.create();
-		for (String api: searchApis) multiSearch.put(api, search);
+		RNamedList multiSearch = RNamedList.create();
+		for (String api: searchApis) multiSearch.put(api, RConverter.convert(search));
 		return multiSearch(multiSearch, from, to, limit);
 	}
 	
@@ -144,21 +154,21 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 		return search(search, Optional.of(from), Optional.of(to), limit);
 	};
 	
-	public Collection<Record> multiSearch(Map<String,String> searchByApi) {
+	public Collection<Record> multiSearch(RNamedList searchByApi) {
 		return multiSearch(searchByApi, from, to, limit);
 	}
 		
-	public Collection<Record> multiSearch(Map<String,String> searchByApi, Optional<LocalDate> from1, Optional<LocalDate> to1,
+	public Collection<Record> multiSearch(RNamedList searchByApi, Optional<LocalDate> from1, Optional<LocalDate> to1,
 			Optional<Integer> limit1) {
 		Collection<Record> out = new ArrayList<>();
-		searchByApi.forEach((searchApi,search) -> {
+		searchByApi.asMap().forEach((searchApi,search) -> {
 			Collection<? extends Record> tmp = Collections.emptyList(); 
 			if (searchApi.equals("crossref")) {
-				tmp = api.getCrossref().search(search, from1, to1, limit1);
+				tmp = api.getCrossref().search(search.toString(), from1, to1, limit1);
 			} else if (searchApi.equals("entrez")) {
-				tmp = api.getEntrez().search(search, from1, to1, limit1);
+				tmp = api.getEntrez().search(search.toString(), from1, to1, limit1);
 			} else if (searchApi.equals("europepmc")) {
-				tmp = api.getEuropePMC().search(search, from1, to1, limit1);
+				tmp = api.getEuropePMC().search(search.toString(), from1, to1, limit1);
 			}
 			log.info("Search found {} hits in {} for '{}'",tmp.size(),searchApi,search);
 			out.addAll(tmp);
@@ -244,11 +254,11 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 		return out;
 	}
 	
-	@RMethod void downloadPdfs(String baseDirectory, List<String> pdfUrls, List<String> names) {
+	@RMethod void downloadPdfs(String baseDirectory, RCharacterVector pdfUrls, RCharacterVector names) {
 		Path out = Paths.get(baseDirectory);
 		for (int i=0; i<pdfUrls.size(); i++) {
-			String url = pdfUrls.get(i);
-			String name = names.get(i); 
+			String url = pdfUrls.get(i).get();
+			String name = names.get(i).get(); 
 			
 			Optional<InputStream> ois = api.getPdfFetcher().getPdfFromUrl(url);
 			if (ois.isPresent()) {
@@ -262,7 +272,6 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 		}
 	}
 	
-	@RMethod
 	public Set<CrossRefWork> getReferencesFromPdf(String pdfUrl) throws IOException {
 		
 		Optional<InputStream> ois = api.getPdfFetcher().getPdfFromUrl(pdfUrl);
@@ -312,93 +321,93 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 	}
 	
 	@RMethod 
-	public ApiClient withSearchApis(List<String> apis) {
-		this.searchApis = apis;
+	public ApiClient withSearchApis(RCharacterVector apis) {
+		this.searchApis = apis.get().collect(Collectors.toList());
 		return this;
 	}
 	
 	@RMethod 
-	public ApiClient withFetchApis(List<String> apis) {
-		this.fetchApis = apis;
+	public ApiClient withFetchApis(RCharacterVector apis) {
+		this.fetchApis = apis.get().collect(Collectors.toList());
 		return this;
 	}
 	
 	@RMethod 
-	public ApiClient withCitesApis(List<String> apis) {
-		this.citesApis = apis;
+	public ApiClient withCitesApis(RCharacterVector apis) {
+		this.citesApis = apis.get().collect(Collectors.toList());
 		return this;
 	}
 	
 	@RMethod 
-	public ApiClient withCitedByApis(List<String> apis) {
-		this.citedByApis = apis;
+	public ApiClient withCitedByApis(RCharacterVector apis) {
+		this.citedByApis = apis.get().collect(Collectors.toList());
 		return this;
 	}
 	
 	@RMethod 
-	public ApiClient withIdMappingApis(List<String> apis) {
-		this.idMapApis = apis;
+	public ApiClient withIdMappingApis(RCharacterVector apis) {
+		this.idMapApis = apis.get().collect(Collectors.toList());
 		return this;
 	}
 	
 	@RMethod 
-	public Set<String> getSupportedCitationStyles() {
+	public RCharacterVector getSupportedCitationStyles() {
 		try {
-			return CSL.getSupportedStyles();
+			return RConverter.using(RConverter.stringCollector()).convert(CSL.getSupportedStyles());
 		} catch (IOException e) {
 			log.warn("couldn't retrieve styles");
-			return Collections.emptySet();
+			return RCharacterVector.empty();
 		}
 	}
 	
 	// Execute api functions
 	
 	@RMethod
-	public Dataframe searchApis(String searchTerm) {
+	public RDataframe searchApis(String searchTerm) {
 		return search(searchTerm).stream()
 					.collect(recordCollector());
 	}
 
 	@RMethod
-	public Dataframe multiSearchApis(Map<String,String> searchTermByApi) {
+	public RDataframe multiSearchApis(RNamedList searchTermByApi) {
 		return multiSearch(searchTermByApi).stream()
 					.collect(recordCollector());
 	}
 
 	@RMethod
-	public Dataframe fetchDetails(List<Map<String,Object>> idDf) {
+	public RDataframe fetchDetails(RDataframe idDf) {
 		Set<ImmutableRecordReference> ids = idsFromDataframe(idDf);
 		return fetch(ids).entrySet().stream()
 			.collect(
-					toDataframe(
-							mapping(Entry.class,Cols.ID, s-> ((ImmutableRecordReference) s.getKey()).getIdentifier().orElse(null)),
+					dataframeCollector(
+							mapping(Entry.class,Cols.ID, s-> ((ImmutableRecordReference) s.getKey()).getIdentifier().orElse((String) null)),
 							mapping(Entry.class,Cols.ID_TYPE, s-> ((ImmutableRecordReference) s.getKey()).getIdentifierType().toString()),
-							mapping(Entry.class,Cols.TITLE, s-> ((Record) s.getValue()).getTitle().orElse(null)),
-							mapping(Entry.class,Cols.ABSTRACT, s-> ((Record) s.getValue()).getAbstract().orElse(null)),
-							mapping(Entry.class,Cols.CITATION, s-> ((Record) s.getValue()).render(citationStyle).orElse(null)),
-							mapping(Entry.class,Cols.PMID, s-> ((Record) s.getValue()).getIdentifier(IdType.PMID).orElse(null)),
-							mapping(Entry.class,Cols.DOI, s-> ((Record) s.getValue()).getIdentifier(IdType.DOI).orElse(null)),
-							mapping(Entry.class,Cols.PMC, s-> ((Record) s.getValue()).getIdentifier(IdType.PMCID).orElse(null)),
-							mapping(Entry.class,Cols.URL, s -> ((Record) s.getValue()).getPdfUri().orElse(null)),
-							mapping(Entry.class,Cols.DATE, s -> ((Record) s.getValue()).getDate().orElse(null))
+							mapping(Entry.class,Cols.TITLE, s-> ((Record) s.getValue()).getTitle().orElse((String) null)),
+							mapping(Entry.class,Cols.ABSTRACT, s-> ((Record) s.getValue()).getAbstract().orElse((String) null)),
+							mapping(Entry.class,Cols.CITATION, s-> ((Record) s.getValue()).render(citationStyle).orElse((String) null)),
+							mapping(Entry.class,Cols.PMID, s-> ((Record) s.getValue()).getIdentifier(IdType.PMID).orElse((String) null)),
+							mapping(Entry.class,Cols.DOI, s-> ((Record) s.getValue()).getIdentifier(IdType.DOI).orElse((String) null)),
+							mapping(Entry.class,Cols.PMC, s-> ((Record) s.getValue()).getIdentifier(IdType.PMCID).orElse((String) null)),
+							mapping(Entry.class,Cols.URL, s -> ((Record) s.getValue()).getPdfUri().map(u -> u.toString()).orElse((String) null)),
+							mapping(Entry.class,Cols.DATE, s -> ((Record) s.getValue()).getDate().orElse((LocalDate) null))
 							));
 	}
 	
 	private static String nullToStr(Object o) {return o != null? o.toString(): null;}
 	
-	protected static Set<ImmutableRecordReference> idsFromDataframe(List<Map<String,Object>> idDf) {
+	protected static Set<ImmutableRecordReference> idsFromDataframe(RDataframe idDf) {
 		if (idDf.size()==0) return Collections.emptySet();
 		if (
-				!(idDf.get(0).containsKey(Cols.ID) && idDf.get(0).containsKey(Cols.ID_TYPE))
-				&& !idDf.get(0).containsKey(Cols.PMC)
-				&& !idDf.get(0).containsKey(Cols.PMID)
-				&& !idDf.get(0).containsKey(Cols.DOI)
+				!(idDf.containsKey(Cols.ID) && idDf.containsKey(Cols.ID_TYPE))
+				&& !idDf.containsKey(Cols.PMC)
+				&& !idDf.containsKey(Cols.PMID)
+				&& !idDf.containsKey(Cols.DOI)
 				
 			) {
 			log.error("Dataframe must contain an {} and {} column, or any of {}, {}, {}",Cols.ID, Cols.ID_TYPE, Cols.DOI, Cols.PMC, Cols.PMID);
 			return Collections.emptySet();
 		}
-		if(idDf.get(0).containsKey(Cols.ID_TYPE)) {
+		if(idDf.containsKey(Cols.ID_TYPE)) {
 			return idDf.stream()
 				.flatMap(row -> Stream.of( 
 						Builder.recordReference(
@@ -421,27 +430,27 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 	}
 	
 	@RMethod
-	public Dataframe citesReferences(List<Map<String,Object>> idDf) {
+	public RDataframe citesReferences(RDataframe idDf) {
 		Set<ImmutableRecordReference> ids = idsFromDataframe(idDf);
 		return citesReferences(ids).stream()
 			.collect(citationLinkCollector());
 	}
 	
 	@RMethod
-	public Dataframe referencesCiting(List<Map<String,Object>> idDf) {
+	public RDataframe referencesCiting(RDataframe idDf) {
 		Set<ImmutableRecordReference> ids = idsFromDataframe(idDf);
 		return referencesCiting(ids).stream()
 			.collect(citationLinkCollector());
 	}
 
-	@RMethod Dataframe lookupIds(List<Map<String,Object>> idDf) {
+	@RMethod RDataframe lookupIds(RDataframe idDf) {
 		Set<ImmutableRecordReference> ids = idsFromDataframe(idDf);
 		return mappings(ids).stream()
 			.collect(idMappingCollector());
 	}
 	
-	protected Collector<RecordReferenceMapping, ?, Dataframe> idMappingCollector() {
-		return toDataframe(
+	protected Collector<RecordReferenceMapping, ?, RDataframe> idMappingCollector() {
+		return dataframeCollector(
 			mapping(RecordReferenceMapping.class, Cols.SOURCE_ID, s-> s.getSource().getIdentifier().orElse(null)),
 			mapping(RecordReferenceMapping.class,Cols.SOURCE_ID_TYPE, s-> s.getSource().getIdentifierType().toString()),
 			mapping(RecordReferenceMapping.class, Cols.TARGET_ID, s-> s.getTarget().getIdentifier().orElse(null)),
@@ -449,8 +458,8 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 		);
 	}
 
-	protected Collector<CitationLink, ?, Dataframe> citationLinkCollector() {
-		return toDataframe(
+	protected Collector<CitationLink, ?, RDataframe> citationLinkCollector() {
+		return dataframeCollector(
 			mapping(CitationLink.class, Cols.SOURCE_ID, s-> s.getSource().getIdentifier().flatMap(rr -> rr.getIdentifier()).orElse(null)),
 			mapping(CitationLink.class,Cols.SOURCE_ID_TYPE, s-> s.getSource().getIdentifier().map(rr -> rr.getIdentifierType()).orElse(null)),
 			mapping(CitationLink.class,Cols.SOURCE_TITLE, s-> s.getSource().getTitle().orElse(null)),
@@ -461,18 +470,18 @@ public class ApiClient implements Searcher,CitedByMapper,CitesMapper,RecordFetch
 		);
 	}
 
-	protected Collector<Record, ?, Dataframe> recordCollector() {
-		return toDataframe(
-			mapping(Record.class,Cols.TITLE, s-> s.getTitle().orElse(null)),
-			mapping(Record.class,Cols.ABSTRACT, s-> s.getAbstract().orElse(null)),
-			mapping(Record.class,Cols.CITATION, s-> s.render(citationStyle).orElse(null)),
-			mapping(Record.class,Cols.PMID, s-> s.getIdentifier(IdType.PMID).orElse(null)),
-			mapping(Record.class,Cols.DOI, s-> s.getIdentifier(IdType.DOI).orElse(null)),
-			mapping(Record.class,Cols.PMC, s-> s.getIdentifier(IdType.PMCID).orElse(null)),
-			mapping(Record.class,Cols.ID, s -> s.getIdentifier().orElse(null)),
+	protected Collector<Record, ?, RDataframe> recordCollector() {
+		return dataframeCollector(
+			mapping(Record.class,Cols.TITLE, s-> s.getTitle().orElse((String) null)),
+			mapping(Record.class,Cols.ABSTRACT, s-> s.getAbstract().orElse((String) null)),
+			mapping(Record.class,Cols.CITATION, s-> s.render(citationStyle).orElse((String) null)),
+			mapping(Record.class,Cols.PMID, s-> s.getIdentifier(IdType.PMID).orElse((String) null)),
+			mapping(Record.class,Cols.DOI, s-> s.getIdentifier(IdType.DOI).orElse((String) null)),
+			mapping(Record.class,Cols.PMC, s-> s.getIdentifier(IdType.PMCID).orElse((String) null)),
+			mapping(Record.class,Cols.ID, s -> s.getIdentifier().orElse((String) null)),
 			mapping(Record.class,Cols.ID_TYPE, s -> s.getIdentifierType().toString()),
-			mapping(Record.class,Cols.DATE, s -> s.getDate().orElse(null)),
-			mapping(Record.class,Cols.URL, s -> s.getPdfUri().orElse(null)));
+			mapping(Record.class,Cols.DATE, s -> s.getDate().orElse((LocalDate) null)),
+			mapping(Record.class,Cols.URL, s -> s.getPdfUri().map(u -> u.toString()).orElse((String) null)));
 	}
 
 	@RMethod

@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.bind.JAXBException;
 
 import org.ehcache.Cache;
 import org.isomorphism.util.TokenBuckets;
@@ -34,16 +33,16 @@ import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.PdfFetcher;
 import uk.co.terminological.bibliography.client.CitedByMapper;
 import uk.co.terminological.bibliography.client.CitesMapper;
-import uk.co.terminological.bibliography.client.RecordFetcher;
 import uk.co.terminological.bibliography.client.IdMapper;
+import uk.co.terminological.bibliography.client.RecordFetcher;
 import uk.co.terminological.bibliography.client.Searcher;
 import uk.co.terminological.bibliography.pmcidconv.PMCIDClient;
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.ImmutableRecordReference;
 import uk.co.terminological.bibliography.record.ImmutableRecordReferenceMapping;
+import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.bibliography.record.RecordReferenceMapping;
 import uk.co.terminological.fluentxml.Xml;
@@ -199,29 +198,6 @@ public class EntrezClient extends CachingApiClient implements Searcher, RecordFe
 		public String toString() {return this.name().toLowerCase();}
 	}
 
-	/**
-	 * Retrieve PMIDs from PubMed for a search string
-	 * 
-	 * @param searchTerm
-	 *            search string (same as Pubmed web interface)
-	 * @return
-	 * @throws BibliographicApiException 
-	 * @throws JAXBException
-	 
-	public EntrezResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
-		logger.debug("making esearch query with params {}", builder.toString());
-		rateLimiter.consume();
-		InputStream is = builder.get(eSearchResource).post(InputStream.class);
-		
-		try {
-			Xml resp = Xml.fromStream(is);
-			return new EntrezResult.Search(resp.content());
-		} catch (XmlException e1) {
-			throw new BibliographicApiException("could not parse result",e1);
-		}
-		
-	}*/
-
 
 	public List<String> findPMIdsBySearch(String searchTerm) { //throws BibliographicApiException {
 		if (searchTerm == null || searchTerm.isEmpty()) return Collections.emptyList(); 
@@ -251,10 +227,9 @@ public class EntrezClient extends CachingApiClient implements Searcher, RecordFe
 	/**
 	 * Fetch PubMed article metadata and abstract
 	 * 
-	 * @param pmid
+	 * @param pmids - the pubmed ids
 	 * @return
 	 * @throws BibliographicApiException 
-	 * @throws JAXBException
 	 */
 	public Set<EntrezEntry> getPMEntriesByPMIds(Collection<String> pmids) { // throws BibliographicApiException {
 		Set<EntrezEntry> out = new HashSet<>();
@@ -328,7 +303,6 @@ public class EntrezClient extends CachingApiClient implements Searcher, RecordFe
 	 * retrieves a full text for an article from PubMed Central
 	 * @param pmcId
 	 * @return
-	 * @throws JAXBException
 	 */
 	public Optional<InputStream> getPubMedCentralXMLByPubMedCentralId(String pmcId) {
 		if (pmcId == null || pmcId.isEmpty()) return Optional.empty();
@@ -361,7 +335,8 @@ public class EntrezClient extends CachingApiClient implements Searcher, RecordFe
 	
 	/**
 	 * retrieves a full entries for a list of articles from the given database 
-	 * @param list of ids
+	 * @param ids - list of ids
+	 * @param db - the pubmed database
 	 * @return
 	 */
 	public Optional<InputStream> getXMLByIdsAndDatabase(Collection<String> ids,Database db) {

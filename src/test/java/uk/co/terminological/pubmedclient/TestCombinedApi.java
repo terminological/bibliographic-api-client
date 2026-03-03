@@ -2,26 +2,19 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
-import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.Record;
-import uk.co.terminological.bibliography.record.ImmutableRecordReference;
 import uk.co.terminological.bibliography.rjavaapi.ApiClient;
 import uk.co.terminological.bibliography.rjavaapi.Repository;
-import uk.co.terminological.datatypes.FluentList;
-import uk.co.terminological.datatypes.FluentMap;
-import uk.co.terminological.jsr223.ROutput.Dataframe;
+import uk.co.terminological.rjava.types.RDataframe;
+import uk.co.terminological.rjava.types.RVector;
+
 
 public class TestCombinedApi {
 
@@ -36,14 +29,20 @@ public class TestCombinedApi {
 		ApiClient api = ApiClient.createCached(System.getProperty("user.home")+"/Dropbox/secrets.prop", "/tmp/ehcache/test125");
 		//api.disableCache();
 		
-		Dataframe df1 = api.searchApis("challen ai safety");
+		api.withSearchLimit(10);
+		RDataframe df1 = api.searchApis("covid 19 database");
 		System.out.println(df1);
 		
-		Dataframe df2 = api.citesReferences((List<Map<String,Object>>) FluentList.create((Map<String,Object>)FluentMap.create(String.class, Object.class).and("id", "30636200").and("idType", "PMID")));
+		//System.exit(0);
+		
+		RDataframe df2 = api.citesReferences(
+				RDataframe.create()
+				.withCol("id", RVector.with("30636200"))
+				.withCol("idType", RVector.with("PMID")));
 		System.out.println(df2);
 		
 		
-		Dataframe df3 = api.fetchDetails(df1.subList(0, 1));
+		RDataframe df3 = api.fetchDetails(df1.subset(0, 1));
 		System.out.println(df3);
 //		Collection<? extends Record> hits = api
 //			.withSearchLimit(10)

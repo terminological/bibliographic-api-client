@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>com.github.terminological</groupId>
 			<artifactId>fluentxml</artifactId>
-			<version>1.01</version>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -107,8 +107,8 @@
 		<dependency>
 			<groupId>com.github.terminological</groupId>
 <!-- 			<groupId>uk.co.terminological</groupId> -->
-			<artifactId>r-jsr223-runtime</artifactId>
-			<version>1.05</version>
+			<artifactId>r6-generator-runtime</artifactId>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 <!-- 			<groupId>com.github.terminological</groupId> -->
@@ -120,12 +120,6 @@
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.terminological</groupId>
-			<artifactId>fluentsheet</artifactId>
-			<version>master-SNAPSHOT</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -166,22 +160,36 @@
 			<plugin>
 				<groupId>com.github.terminological</groupId>
 <!-- 				<groupId>uk.co.terminological</groupId> -->
-				<artifactId>r-jsr223-maven-plugin</artifactId>
-				<version>1.05</version>
+				<artifactId>r6-generator-maven-plugin</artifactId>
+				<version>master-SNAPSHOT</version>
 				<configuration>
 					<packageData>
 						<title>Bibliographic Apis</title>
 						<version>0.01</version>
 						<packageName>biblioapi</packageName>
+						<debug>true</debug>
+						<rjavaOpts>
+							<rjavaOpt>-Xmx4096M</rjavaOpt>
+						</rjavaOpts>
+						<useJavadoc>true</useJavadoc>
+						<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+<!-- 						<usePkgdown>true</usePkgdown> -->
 						<license>MIT</license>
 						<description>A collection of utilities for interacting with various bibliographic APIs from R</description>
 						<maintainerName>Rob</maintainerName>
 						<maintainerFamilyName>Challen</maintainerFamilyName>
 						<maintainerEmail>rob@terminological.co.uk</maintainerEmail>
+						<maintainerOrganisation>terminological</maintainerOrganisation>
 					</packageData>
-					<outputDirectory>${project.build.directory}/r-library</outputDirectory>
+					<outputDirectory>${project.basedir}/r-library</outputDirectory>
 				</configuration>
 				<executions>
+					<execution>
+						<id>compile-java-library</id>
+						<goals>
+							<goal>compile-java-library</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>generate-r-library</id>
 						<goals>
